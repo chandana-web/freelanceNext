@@ -10,7 +10,9 @@
   border-radius: 5px;
 }
 
-
+.menu-btn.services-navbar{
+  color:#222
+}
 
 .navbar-tabs{
     margin-left: 450px;

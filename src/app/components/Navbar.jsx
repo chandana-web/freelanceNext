@@ -1,14 +1,37 @@
 "use client";
 
+
 import Link from "next/link";
+
+
 
 import "@/app/styles/navbar.css"
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import {useRouter} from "next/navigation"
+
 
 
 const Navbar = () => {
+const router =useRouter()
+useEffect(() => {
+    // load bootstrap only on client
+    import("bootstrap/dist/js/bootstrap.bundle.min.js").then((bootstrap) => {
+      // make it available globally
+      window.bootstrap = bootstrap;
+    });
+  }, []);
 
+ const handleNav = (href) => {
+    // Close Bootstrap offcanvas
+    const offcanvas = document.querySelector(".offcanvas.show");
+    if (offcanvas) {
+      const bootstrapOffcanvas = bootstrap.Offcanvas.getInstance(offcanvas);
+      bootstrapOffcanvas.hide();
+    }
+
+    router.push(href);
+  };
     
 
     const [showSearch, setShowSearch] = useState(false);
@@ -16,12 +39,7 @@ const Navbar = () => {
 
     const isServicesPage = pathname ==="/pages/services" || pathname ==="/pages/freelancerProfile" || pathname ==="/pages/projectProfile" || pathname ==="/pages/plans"
 
-   useEffect(() => {
-    // Load bootstrap JS only on client
-    import("bootstrap/dist/js/bootstrap.bundle.min.js")
-      .then(() => console.log("Bootstrap loaded"))
-      .catch(err => console.error("Bootstrap load error:", err));
-  }, []);
+    
 const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -94,7 +112,7 @@ useEffect(() => {
 
       {/* MOBILE MENU BUTTON (hidden on desktop) */}
       <button
-        className="btn btn-outline-light ms-auto d-lg-none"
+        className={`menu-btn ${isServicesPage ? "services-navbar" : ""} btn btn-outline-light ms-auto d-lg-none`}
         type="button"
         data-bs-toggle="offcanvas"
         data-bs-target="#mobileMenu"
@@ -115,13 +133,18 @@ useEffect(() => {
         <ul className="navbar-nav mx-auto gap-4">
 
           <li className="nav-item">
-            <Link className="nav-link" href="/">Home</Link>
+            <button
+            className="accordion-button collapsed text-white mt-2"
+            onClick={() => handleNav("/")}
+          >
+            Home
+          </button>
           </li>
 
           <li className="nav-item dropdown">
-            <div className="nav-link dropdown-toggle" href="/">Browse</div>
+            <div className="nav-link dropdown-toggle" >Browse</div>
             <ul className="dropdown-menu">
-              <li><Link className="dropdown-item" href="/pages/services">Services</Link></li>
+              <li><button className="nav-link text-white" onClick={() => handleNav("/pages/services")}>Services</button></li>
               <li><Link className="dropdown-item" href="/pages/projects">Projects</Link></li>
               <li><Link className="dropdown-item" href="/pages/job-view">Job View</Link></li>
             </ul>
@@ -163,87 +186,82 @@ useEffect(() => {
 
         <div className="offcanvas-body">
 
-  <div className="accordion" id="mobileNavAccordion">
+   <div className="accordion" id="mobileNavAccordion">
 
-    {/* Home (no dropdown) */}
-    <div className="accordion-item bg-dark border-0">
-      <h2 className="accordion-header">
-        <Link href="/" className="accordion-button collapsed bg-dark text-white border-0 shadow-none"
-              data-bs-dismiss="offcanvas">
-          Home
-        </Link>
-      </h2>
-    </div>
+      {/* Home */}
+      <div className="accordion-item bg-dark border-0">
+        <h2 className="accordion-header">
+          <button
+            className="accordion-button collapsed bg-dark text-white"
+            onClick={() => handleNav("/")}
+          >
+            Home
+          </button>
+        </h2>
+      </div>
 
-    {/* Browse Dropdown */}
-    <div className="accordion-item bg-dark border-0">
-      <h2 className="accordion-header">
-        <button
-          className="accordion-button dropdown-toggle collapsed bg-dark text-white shadow-none"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseBrowse"
-        >
-          Browse
-        </button>
-      </h2>
-      <div id="collapseBrowse" className="accordion-collapse collapse" data-bs-parent="#mobileNavAccordion">
-        <div className="accordion-body px-3">
-          <Link href="/pages/services" className="nav-link text-white" data-bs-dismiss="offcanvas">Services</Link>
-          <Link href="/pages/projects" className="nav-link text-white" data-bs-dismiss="offcanvas">Projects</Link>
-          <Link href="/pages/job-view" className="nav-link text-white" data-bs-dismiss="offcanvas">Job View</Link>
+      {/* Browse Dropdown */}
+      <div className="accordion-item bg-dark border-0">
+        <h2 className="accordion-header">
+          <button
+            className="accordion-button collapsed bg-dark text-white"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseBrowse"
+          >
+            Browse
+          </button>
+        </h2>
+        <div id="collapseBrowse" className="accordion-collapse collapse">
+          <div className="accordion-body px-3">
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/services")}>Services</button>
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/projects")}>Projects</button>
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/job-view")}>Job View</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    {/* Domains Dropdown */}
-    <div className="accordion-item bg-dark border-0">
-      <h2 className="accordion-header">
-        <button
-          className="accordion-button dropdown-toggle collapsed bg-dark text-white shadow-none"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseDomains"
-        >
-          Domains
-        </button>
-      </h2>
-      <div id="collapseDomains" className="accordion-collapse collapse" data-bs-parent="#mobileNavAccordion">
-        <div className="accordion-body px-3">
-          <Link href="/pages/search-domains" className="nav-link text-white" data-bs-dismiss="offcanvas">
-            Search for Domains
-          </Link>
-          <Link href="/pages/domain-owner" className="nav-link text-white" data-bs-dismiss="offcanvas">
-            Find a Domain Owner
-          </Link>
+      {/* Domains Dropdown */}
+      <div className="accordion-item bg-dark border-0">
+        <h2 className="accordion-header">
+          <button
+            className="accordion-button collapsed bg-dark text-white"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseDomains"
+          >
+            Domains
+          </button>
+        </h2>
+        <div id="collapseDomains" className="accordion-collapse collapse">
+          <div className="accordion-body px-3">
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/search-domains")}>Search for Domains</button>
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/domain-owner")}>Find a Domain Owner</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    {/* Pages Dropdown */}
-    <div className="accordion-item bg-dark border-0">
-      <h2 className="accordion-header">
-        <button
-          className="accordion-button dropdown-toggle collapsed bg-dark text-white shadow-none"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapsePages"
-        >
-          Pages
-        </button>
-      </h2>
-      <div id="collapsePages" className="accordion-collapse collapse" data-bs-parent="#mobileNavAccordion">
-        <div className="accordion-body px-3">
-          <Link href="/" className="nav-link text-white" data-bs-dismiss="offcanvas">Home</Link>
-          <Link href="/pages/about" className="nav-link text-white" data-bs-dismiss="offcanvas">About Us</Link>
-          <Link href="/pages/contact" className="nav-link text-white" data-bs-dismiss="offcanvas">Contact</Link>
-          <Link href="/pages/terms" className="nav-link text-white" data-bs-dismiss="offcanvas">Terms & Conditions</Link>
-          <Link href="/pages/plans" className="nav-link text-white" data-bs-dismiss="offcanvas">Plans</Link>
+      {/* Pages Dropdown */}
+      <div className="accordion-item bg-dark border-0">
+        <h2 className="accordion-header">
+          <button
+            className="accordion-button collapsed bg-dark text-white"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapsePages"
+          >
+            Pages
+          </button>
+        </h2>
+        <div id="collapsePages" className="accordion-collapse collapse">
+          <div className="accordion-body px-3">
+            <button className="nav-link text-white" onClick={() => handleNav("/")}>Home</button>
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/about")}>About Us</button>
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/contact")}>Contact</button>
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/terms")}>Terms & Conditions</button>
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/plans")}>Plans</button>
+          </div>
         </div>
       </div>
-    </div>
 
-  </div>
+    </div>
 
   <hr className="border-secondary mt-4" />
 
