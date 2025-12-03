@@ -1,0 +1,162 @@
+.pricing-container {
+  text-align: center;
+  padding: 100px 20px;
+  background-color: #f1fcfa;
+}
+
+.pricing-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.pricing-sub {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.toggle-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 35px;
+  font-size: 15px;
+}
+
+.toggle-wrapper span.active {
+  font-weight: 600;
+  color: #111;
+}
+
+.save-tag {
+  background: #eafbe4;
+  color: #2da44e;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+/* Switch */
+.switch {
+  position: relative;
+  width: 48px;
+  height: 24px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #ccc;
+  border-radius: 20px;
+  transition: .3s;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: .3s;
+}
+
+input:checked + .slider {
+  background: #4caf50;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Cards */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.pricing-card {
+  border: 1px solid #eee;
+  padding: 30px;
+  border-radius: 12px;
+  transition: .3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-4px);
+  border-color: #4caf50;
+}
+
+.plans-price {
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.plans-price span {
+  font-size: 14px;
+  color: #777;
+}
+
+.plan-name {
+  font-size: 18px;
+  margin-top: 5px;
+}
+
+.plan-desc {
+  font-size: 14px;
+  color: #777;
+  margin: 10px 0 20px;
+}
+
+/* Features */
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 25px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Button */
+.buy-btn {
+  width: 100%;
+  padding: 12px 0;
+  background: white;
+  border: 1px solid #4caf50;
+  color: #2da44e;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .3s ease;
+}
+
+.buy-btn:hover {
+  background: #4caf50;
+  color: white;
+}
+
+/* Responsive */
+@media(max-width:900px){
+  .pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width:600px){
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}

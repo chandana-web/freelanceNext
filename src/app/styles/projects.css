@@ -1,0 +1,874 @@
+.projects{
+  background-color: #f1fcfa;
+  
+  
+}
+
+
+
+
+.projects-hero {
+  position: relative;
+  width: 100%;
+  min-height: 380px;
+  background: #124734; /* dark green tone */
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 50px 80px;
+  overflow: hidden;
+  color: white;
+}
+
+/* Left abstract shape */
+.hero-left-shape {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 180px;
+  opacity: 1;
+}
+
+/* Hero Image (Right) */
+.projects-hero-img {
+  position: absolute;
+  right: 50px;
+  
+  bottom: 0;
+  width: 280px;
+  height: 280px;
+  z-index: 3; 
+}
+
+/* Text Area */
+.projects-content {
+  max-width: 50%;
+  z-index: 2;
+}
+
+.projects-content h1 {
+  font-size: 45px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.projects-content p {
+  font-size: 16px;
+  margin-bottom: 25px;
+}
+
+/* Search Container */
+.projects-search {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 520px;
+}
+
+.projects-search input {
+  flex: 1;
+  border: none;
+  font-size: 16px;
+  outline: none;
+  color: #444;
+}
+
+.search-icon {
+  font-size: 20px;
+  color: #777;
+}
+
+.search-btn {
+  background: #28a86b;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.search-btn:hover {
+  background: #1e8052;
+}
+
+
+
+
+
+/* Position the floating line above the hero image */
+.curve-line {
+  position: absolute;
+  right: 140px;
+  top: 70px;
+  width: 180px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.9;
+}
+
+/* Animation for line floating up/down */
+.float-line {
+  animation: floatLine 3s ease-in-out infinite;
+}
+
+@keyframes floatLine {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+.filters-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 35px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+/* Left section */
+.filters-left {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Default Button */
+.filter-btn {
+  background: white;
+  border: 1px solid #dcdcdc;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Dropdown Buttons */
+.filter-dropdown {
+  background: white;
+  border: 1px solid #dcdcdc;
+  
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 10px 15px;
+    
+    background-color: #f8f8f8;
+    transition: background-color 0.2s;
+}
+
+/* Icon arrow */
+.filter-arrow {
+  width: 12px;
+  height: 12px;
+}
+
+/* Right Sorting Section */
+.filters-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sort-filter-dropdown {
+  background: transparent !important;
+  border: none;
+  
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+ 
+    
+    background-color: #f8f8f8;
+    transition: background-color 0.2s;
+}
+
+.sort-filter-dropdown:hover{
+  color: #198754;
+}
+
+.sort-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+
+
+/* Dropdown Box */
+.sort-menu {
+  position: absolute;
+  top: 70%;
+  right: 30px;
+  width: 180px;
+  background: white;
+  border: 1px solid #e1e1e1;
+  border-radius: 10px;
+  box-shadow: 0px 6px 16px rgba(0,0,0,0.1);
+  padding: 6px 0;
+  animation: fadeDown 0.15s ease;
+  z-index: 1000;
+}
+
+/* List Items */
+.sort-item {
+  padding: 10px 15px;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.sort-item:hover {
+  background: #f5fff7;
+}
+
+/* Active selected item */
+.sort-item.active {
+  background: #f2fff4;
+  font-weight: 500;
+  color: #198754;
+}
+
+.checkmark {
+  font-size: 14px;
+}
+
+/* Fade animation */
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+
+.sort-text {
+  font-size: 14px;
+  color: #555;
+}
+
+.filter-container {
+    position: relative; /* Essential for positioning the dropdown box */
+    display: inline-block;
+}
+
+/* The button styles (adjust as needed) */
+
+
+.filter-dropdown:hover {
+    background-color: #eaeaea;
+}
+
+/* The Dropdown Box Styling */
+.filter-box {
+    position: absolute;
+    top: 100%; /* Position right below the button */
+    left: 0;
+    margin-top: 10px; /* Space between button and box */
+    
+    /* Box appearance */
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 200px; /* Ensure it's wide enough */
+    z-index: 10; /* Keep it above other content */
+    
+    /* Content layout */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Checkbox/Label Styling */
+.filter-box label {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.filter-box input[type="checkbox"] {
+    margin-right: 10px;
+    /* Optional: custom checkbox styles can be added here */
+}
+
+.filter-box input[type="radio"] {
+    margin-right: 10px;
+    
+}
+
+/* Apply button styling */
+.apply-btn {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #5cb85c; /* Green color matching the image */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.slider-container {
+  width: 100%;
+  padding: 5px;
+}
+
+.slider-track {
+  height: 4px;
+  border-radius: 5px;
+  width: 100%;
+  margin: 15px 0;
+  position: relative;
+}
+
+.slider-thumb {
+  height: 18px;
+  width: 18px;
+  background-color: #38C172;
+  border-radius: 50%;
+  cursor: grab;
+  border: 2px solid white;
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+.slider-thumb:active {
+  cursor: grabbing;
+}
+
+.slider-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.slider-input {
+  width: 90px;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.dash {
+  margin: 0 10px;
+}
+
+.apply-button {
+  width: 100%;
+  background-color: #38C172;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* --- CSS for Side Panel --- */
+
+.side-panel {
+    position: fixed; /* Stays in place when scrolling */
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 300px; /* Adjust width as needed */
+    background: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 50; /* Ensure it's above all other content */
+    
+    /* Animation: Start off-screen */
+    transform: translateX(-100%);
+    transition: transform 0.5s ease-in-out;
+    
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+
+    
+  /* right: -350px; */
+  
+  
+  
+  
+  z-index: 1000;
+  
+  overflow-y: auto;
+  padding: 10px;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.15);
+}
+.panel-content::-webkit-scrollbar {
+    display: none; /* The core property to hide the bar */
+    width: 0;      /* Ensures no width is reserved for the scrollbar */
+}
+
+
+
+.side-panel.open {
+    transform: translateX(0); /* Slide in */
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 60px;
+    padding: 0px;
+    border-bottom: 1px solid #eee;
+}
+
+.panel-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #555;
+}
+
+.panel-content {
+    flex-grow: 1; /* Allows content to take up remaining space */
+    overflow-y: auto; /* Scroll content if needed */
+    padding: 15px;
+}
+
+.filter-section {
+    
+    border-bottom: 1px solid #eee;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    cursor: pointer; /* To imply it can be collapsed/expanded */
+}
+
+/* Add styling for radio buttons/checkboxes within the panel if needed */
+
+.side-panel .filter-section {
+  /* border-bottom: 1px solid #eee; */
+  padding: 8px 0;
+}
+
+.sidebar-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 10px 0;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.arrow {
+  transition: transform 0.8s ease;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.sidebar-dropdown {
+  padding: 10px 0 15px;
+  animation: dropdownFade 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dim Background When Sidebar Is Open */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 999;
+}
+
+/* Sidebar Container */
+.side-panel {
+  
+}
+
+/* When Open */
+.side-panel.open {
+  right: 0;
+}
+
+/* Header */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* Accordion Styling */
+.sidebar-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 12px 0;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.arrow {
+  transition: transform .3s ease;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.panel-footer{
+  display: flex;
+  justify-content: space-between;
+  padding-right: 5px ;
+}
+.clear-btn{
+  margin-top: 15px;
+    padding: 10px;
+    
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Prevent Navbar Logo Shift */
+body.sidebar-open {
+  overflow: hidden;
+}
+
+
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.project-wrapper{
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+/* Card */
+.project-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #e6e6e6;
+  transition: .3s;
+  color: black;
+}
+
+.project-card:hover {
+  box-shadow: 0px 6px 20px rgba(0,0,0,0.05);
+}
+
+/* Left Section */
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* .avatar {
+  width: 45px;
+  height: 45px;
+  background: #4e60ff;
+  border-radius: 50%;
+} */
+
+.project-meta span {
+  margin-right: 12px;
+  color: #666;
+  font-size: 14px;
+  text-align: left;
+}
+.project-content{
+  text-align: start;
+}
+
+.project-desc {
+  margin: 10px 0;
+  font-size: 15px;
+}
+
+.project-tags span {
+  background: #f7f7f7;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin-right: 8px;
+}
+
+.project-left{
+  border-right: 1px solid #e6e6e6;
+  
+}
+
+/* Right Section */
+.project-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 150px;
+  padding-left: 15px;
+}
+
+.projects-price {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.proposal-btn {
+  margin-top: 12px;
+  border: 1px solid #28a86b;
+  color: #28a86b;
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.proposal-btn:hover {
+  background: #28a86b;
+  color: white;
+}
+.project-title{
+  font-size: 20px;
+  margin-bottom: 40px;
+}
+
+.project-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 30px;
+  
+}
+
+.project-pagination{
+  display: flex;
+  
+  gap: 10px;
+  justify-content: center;
+  margin-top: 40px;
+  align-items: center;
+  margin-bottom: 15px;
+  
+}
+
+.project-page-btn, 
+.project-page-number {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #dcdcdc;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.project-page-number.active {
+  background: #25a469;
+  color: white;
+  border-color: #25a469;
+}
+
+.project-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.project-page-btn:hover:not(:disabled),
+.project-page-number:hover:not(.active) {
+  background: #f4f4f4;
+}
+
+a{
+  text-decoration: none;
+}
+
+
+/* Responsive */
+@media(max-width:900px){
+  
+  .project-grid{
+    grid-template-columns:1fr;
+  }
+  .project-card{
+    flex-direction: column;
+    padding: 10px;
+  }
+  .project-left{
+  border-right: none;
+  border-bottom: 1px solid #e6e6e6;
+  padding-left: 0;
+  padding-bottom: 15px  ;
+}
+.project-right{
+  padding-top: 15px ;
+}
+
+.project-content{
+  text-align: center;
+}
+
+.project-meta{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  
+}
+
+.project-meta span{
+  text-align: center;
+}
+
+.filter-dropdown{
+    display: none;
+  }
+
+  .filters-right {
+    margin-top: 10px;
+  }
+
+}
+
+
+/* Responsive: filters become horizontally scrollable */
+@media (max-width: 900px) {
+  .projects-filters {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .project-filters-left {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    padding-bottom: 5px;
+  }
+
+  .project-filters-left::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .project-filters-left::-webkit-scrollbar-thumb {
+    background: #bfbfbf;
+    border-radius: 4px;
+  }
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .projects-hero-img {
+    display: none;
+  }
+
+  .projects-search {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 40px 25px;
+  }
+
+  .projects-content {
+    max-width: 100%;
+    margin-top: 60px;
+  }
+
+  .projects-hero-img {
+    display: none;
+  }
+  .curve-line{
+    display: none;
+  }
+}
+

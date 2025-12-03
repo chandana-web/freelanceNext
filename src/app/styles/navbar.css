@@ -1,0 +1,134 @@
+.navbar-custom {
+  background: transparent !important;
+  position: sticky;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+.dropdown-item:hover{
+  background-color: #198754;
+  border-radius: 5px;
+}
+
+
+
+.navbar-tabs{
+    margin-left: 450px;
+}
+
+.navbar-main {
+    position: fixed !important;
+  width: 100%;
+  position: fixed !important;   /* makes it stick */
+  top: 0;
+  z-index: 2000;
+  background: transparent;
+  transition: all 0.4s ease;
+}
+
+/* Navbar when scrolled */
+.navbar-scrolled {
+  background: rgba(0, 0, 0, 0.65); /* translucent black */
+  backdrop-filter: blur(5px);
+}
+
+
+.nav-link, .navbar-brand {
+  color: black !important;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  color: #ddd !important;
+}
+
+/* Dropdown on hover */
+.nav-item.dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0;
+}
+
+.dropdown-menu {
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.navbar-white {
+  background: white !important;
+  transition: 0.3s ease;
+}
+
+.navbar-transparent {
+  background: transparent !important;
+  transition: 0.3s ease;
+}
+
+.offcanvas .nav-link {
+  font-size: 16px;
+}
+
+.accordion-body .nav-link{
+    color: grey !important;
+}
+
+.offcanvas {
+  position: fixed !important;
+  top: 0;
+  height: 100vh !important;
+  z-index: 10000 !important;
+}
+.offcanvas-backdrop {
+  position: fixed !important;
+  z-index: 9998 !important;
+}
+
+
+
+.offcanvas ul ul {
+  margin-left: 10px;
+}
+.accordion-button {
+  font-size: 17px;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #222 !important;
+  color: white !important;
+}
+
+.accordion-item {
+  border: none;
+}
+
+.mobile-search {
+  flex: 1;
+  max-width: 70%;
+  display: flex !important;
+  align-items: center;
+}
+
+.small-nav-input {
+  height: 35px;
+  font-size: 15px;
+}
+
+@media(min-width: 992px) {
+  .mobile-search {
+    display: none !important;
+  }
+}
+
+
+/* Desktop hover dropdown */
+@media (min-width: 992px) {
+  .nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+  }
+
+  .nav-link,
+.navbar-brand {
+  color: white !important;
+  font-weight: 600;
+}
+}
+
