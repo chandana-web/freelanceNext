@@ -898,6 +898,8 @@ height: 120px;
   cursor: pointer;
   transition: 0.3s ease;
   border: 1px solid #eee;
+  text-decoration: none !important;
+  color: #000 !important;
 }
 
 .blog-card:hover {

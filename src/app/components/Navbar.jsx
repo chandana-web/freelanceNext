@@ -133,18 +133,16 @@ useEffect(() => {
         <ul className="navbar-nav mx-auto gap-4">
 
           <li className="nav-item">
-            <button
-            className="accordion-button collapsed text-white mt-2"
-            onClick={() => handleNav("/")}
-          >
-            Home
-          </button>
+            <Link className="nav-link" href="/">Home</Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" href="/pages/plans">Plans</Link>
           </li>
 
           <li className="nav-item dropdown">
             <div className="nav-link dropdown-toggle" >Browse</div>
             <ul className="dropdown-menu">
-              <li><button className="nav-link text-white" onClick={() => handleNav("/pages/services")}>Services</button></li>
+              <li><Link className="dropdown-item" href="/pages/services">Services</Link></li>
               <li><Link className="dropdown-item" href="/pages/projects">Projects</Link></li>
               <li><Link className="dropdown-item" href="/pages/job-view">Job View</Link></li>
             </ul>
@@ -162,10 +160,11 @@ useEffect(() => {
             <Link className="nav-link dropdown-toggle" href="/">Pages</Link>
             <ul className="dropdown-menu">
               <li><Link className="dropdown-item" href="/">Home</Link></li>
+              <li><Link className="dropdown-item" href="/pages/plans">Plans</Link></li>
               <li><Link className="dropdown-item" href="/pages/about">About Us</Link></li>
               <li><Link className="dropdown-item" href="/pages/contact">Contact</Link></li>
-              <li><Link className="dropdown-item" href="/pages/terms">Terms & Conditions</Link></li>
-              <li><Link className="dropdown-item" href="/pages/plans">Plans</Link></li>
+              <li><Link className="dropdown-item" href="/pages/terms&conditions">Terms & Conditions</Link></li>
+              <li><Link className="dropdown-item" href="/pages/blogs">Blogs</Link></li>
             </ul>
           </li>
         </ul>
@@ -196,6 +195,12 @@ useEffect(() => {
             onClick={() => handleNav("/")}
           >
             Home
+          </button>
+          <button
+            className="accordion-button collapsed bg-dark text-white"
+            onClick={() => handleNav("/pages/plans")}
+          >
+            Plans
           </button>
         </h2>
       </div>
@@ -253,10 +258,11 @@ useEffect(() => {
         <div id="collapsePages" className="accordion-collapse collapse">
           <div className="accordion-body px-3">
             <button className="nav-link text-white" onClick={() => handleNav("/")}>Home</button>
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/plans")}>Plans</button>
             <button className="nav-link text-white" onClick={() => handleNav("/pages/about")}>About Us</button>
             <button className="nav-link text-white" onClick={() => handleNav("/pages/contact")}>Contact</button>
             <button className="nav-link text-white" onClick={() => handleNav("/pages/terms")}>Terms & Conditions</button>
-            <button className="nav-link text-white" onClick={() => handleNav("/pages/plans")}>Plans</button>
+            <button className="nav-link text-white" onClick={() => handleNav("/pages/blogs")}>Blogs</button>
           </div>
         </div>
       </div>

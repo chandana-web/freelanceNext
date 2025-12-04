@@ -1,0 +1,182 @@
+/* Page background */
+.auth-page {
+  background: #ffe9e4;
+  
+  padding: 80px 20px;
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* Titles */
+.auth-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.auth-subtitle {
+  margin-top: 5px;
+  color: #555;
+}
+
+/* Card layout */
+.auth-card {
+  background: white;
+  max-width: 550px;
+  margin: 20px auto;
+  padding:40px;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+/* Welcome text */
+.auth-welcome {
+  font-size: 1.2rem;
+  margin-bottom: 6px;
+  text-align: start;
+}
+
+.auth-switch {
+  margin-bottom: 25px;
+  font-size: 0.8rem;
+  text-align: start;
+}
+
+.auth-switch a {
+  color: #00a46c;
+  font-weight: 600;
+}
+
+/* Inputs */
+.auth-card label {
+  text-align: left;
+  width: 100%;
+  display: block;
+  font-weight: 500;
+  margin: 10px 0 5px;
+}
+
+.auth-card input[type="email"],
+.auth-card input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+/* Remember row */
+.auth-row {
+  display: flex;
+  justify-content: space-between;
+  
+  margin: 8px 0;
+  font-size: 12px;
+}
+
+.checkbox-input{
+    margin-right: 8px;
+
+}
+.checkbox{
+    margin-bottom: 5px ;
+}
+.forgot {
+  color: #888;
+   white-space: nowrap;
+   margin-top: 10px;
+}
+
+.forgot:hover{
+    color: #000;
+}
+
+/* Login button */
+.auth-btn {
+  background: #36b26c;
+  color: white;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.auth-btn:hover {
+  background: #2d9e5c;
+}
+
+/* Divider */
+.divider {
+  margin: 25px 0;
+  text-align: center;
+  font-size: 14px;
+  color: #888;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  width: 40%;
+  height: 1px;
+  background: #ddd;
+  position: absolute;
+  top: 50%;
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+/* Social buttons */
+.social-group {
+  display: flex;
+  /* flex-wrap: wrap; */
+  gap: 12px;
+  justify-content: center;
+}
+
+.social-btn {
+    background: white;
+    font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 10px 1px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  justify-content: center;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.facebook { border-color: #3b5998; color: #3b5998; }
+.facebook:hover{
+    color: white;
+    background-color: #3b5998 ;
+}
+.google { border-color: #db4437; color: #db4437; }
+.google:hover{
+    color: white;
+    background-color: #db4437 ;
+}
+.apple { border-color: #000; color: #000; }
+.apple:hover{
+    color: white;
+    background-color: #000 ;
+}
+
+.social-btn:hover { opacity: 0.8; }
+
+@media (max-width: 600px) {
+    .social-btn {
+    
+    font-size: 8px;
+  
+}
+}

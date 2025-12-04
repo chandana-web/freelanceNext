@@ -1,0 +1,523 @@
+.blog-single-wrapper {
+  width: 100%;
+  /* max-width: 1150px; */
+  margin: auto;
+}
+
+/* Hero Section */
+.blog-hero {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.blog-hero-img {
+  object-fit: cover;
+  filter: brightness(0.7);
+}
+
+.blog-container{
+    padding-left: 80px;
+    padding-right: 80px;
+}
+
+.blog-content {
+  padding: 15px 0px;
+  line-height: 1;
+  font-size: 1.07rem;
+  color: #444;
+}
+
+.blog-content h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+/* Quote Box */
+.blog-quote {
+  background: #ffece7;
+  border-left: 5px solid #ff7146;
+  padding: 30px;
+  margin-top: 30px;
+  font-style: italic;
+  border-radius: 8px;
+}
+
+.blog-quote span {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+/* Features / Learning List */
+
+
+.blog-features h3 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+ 
+  
+}
+
+.blog-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(250px, 1fr));
+  gap: 10px 5px;
+}
+
+.blog-check-item {
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Requirements Section */
+.blog-requirements {
+  margin-top: 20px;
+  
+  
+}
+
+.blog-requirements h3 {
+  margin-top: 25px;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+.blog-requirements-img img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.blog-req-list {
+  margin: 5px 0;
+  
+  line-height: 1.1;
+  font-size: 1.05rem;
+  color: #444;
+}
+
+.blog-req-list li {
+  margin-bottom: 12px;
+}
+
+
+
+/* Share Row */
+
+.share-label{
+    
+  font-size: 1.5rem;
+}
+.blog-share-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.share-icons {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.share-icons .icon {
+  font-size: 20px;
+  cursor: pointer;
+  color: #444;
+  
+}
+
+.share-icons .icon:hover {
+  color: #00A67E;
+ 
+  
+  transform: translateY(-2px);
+}
+
+
+/* Tags */
+.blog-tags {
+  /* margin-top: 20px; */
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.blog-tag {
+  background: #ffece7;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #444;
+  border: 1px solid #ffc8bb;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.blog-tag:hover {
+  background: #ffbca7;
+  color: white;
+}
+.blog-review-card {
+  padding: 18px 0;
+  border-bottom: 1px solid #ececec;
+}
+
+.blog-reviews-list h3{
+    margin-bottom: 15px;
+  font-size: 1.8rem;
+}
+
+.blog-review-card:last-of-type {
+  border-bottom: none;
+}
+
+.blog-review-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.blog-review-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #174338; /* dark green */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.blog-review-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.blog-review-name {
+  font-weight: 600;
+}
+
+.blog-review-date {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.blog-review-text {
+  margin: 10px 0 12px;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.blog-review-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.blog-review-action-btn {
+  border: none;
+  background: none;
+  font-size: 0.85rem;
+  color: #777;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.blog-review-action-btn:hover {
+  color: #111;
+}
+
+/* FOOTER */
+.blog-reviews-footer {
+  margin-top: 24px;
+}
+
+.blog-see-more-btn {
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: none;
+  background: #198754;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.blog-see-more-btn:hover {
+  filter: brightness(0.95);
+}
+
+.blog-review-form-section {
+  
+  margin: 20px auto;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: #222;
+}
+
+.blog-review-form-title {
+  font-size: 1.8rem;
+  
+  margin-bottom: 0.25rem;
+}
+
+.blog-review-form-subtitle {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+/* Rating */
+.blog-review-rating-block {
+  margin-bottom: 24px;
+}
+
+.blog-review-rating-label {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.blog-review-stars {
+  display: flex;
+  gap: 5px;
+}
+
+.blog-review-star {
+  background: none;
+  border: none;
+  font-size: 25px;
+  cursor: pointer;
+  color: #d5d5d5; /* grey outline stars */
+  padding: 0;
+}
+
+.blog-review-star-active {
+  color: #f2c94c; /* yellow like screenshot */
+}
+
+/* Form */
+.blog-review-form {
+  margin-top: 10px;
+}
+
+.blog-review-form-group {
+  margin-bottom: 18px;
+}
+
+.blog-review-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.blog-review-textarea {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #e1e1e1;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  resize: vertical;
+  outline: none;
+}
+
+.blog-review-textarea:focus {
+  border-color: #2ecc71;
+}
+
+/* Name + Email row */
+.blog-review-form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.blog-review-form-row .blog-review-form-group {
+  flex: 1;
+  min-width: 220px;
+}
+
+.blog-review-input {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #e1e1e1;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.blog-review-input:focus {
+  border-color: #2ecc71;
+}
+
+/* Checkbox */
+.blog-review-checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #555;
+  margin: 10px 0 24px;
+}
+
+.blog-review-checkbox-wrapper input[type="checkbox"] {
+  margin-top: 3px;
+}
+
+/* Submit button */
+.blog-review-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 26px;
+  border-radius: 10px;
+  border: none;
+  background: #198754;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.blog-review-submit-btn span {
+  font-size: 1rem;
+}
+
+.blog-review-submit-btn:hover {
+  filter: brightness(0.95);
+}
+
+/* Author Section */
+.blog-author {
+  margin-top: 30px;
+  padding:  0;
+  
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.author-img img {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-info h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 3px;
+  color: #222;
+}
+
+.author-info .role {
+  font-size: 0.9rem;
+  color: gray;
+  margin-bottom: 12px;
+}
+
+.author-info .bio {
+  line-height: 1.7;
+  color: #555;
+  max-width: 800px;
+}
+
+
+/* Mobile */
+@media (max-width: 600px) {
+  .blog-review-form-section {
+    padding: 0 16px;
+  }
+
+  .blog-container{
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .blog-feature-grid {
+  
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 3px 2px;
+}
+
+.blog-check-item {
+  font-size: 0.7rem;
+ 
+}
+
+/* Requirements Section */
+.blog-requirements {
+  margin-top: 10px;
+  
+  
+}
+
+.blog-requirements h3 {
+  margin-top: 20px;
+  margin-bottom: 15px;
+  font-size: 1.8rem;
+}
+
+.blog-requirements-img img {
+  
+  height: 200px;
+  
+}
+
+.blog-req-list {
+  
+  
+
+  font-size: 1rem;
+  
+}
+
+.blog-req-list li {
+  margin-bottom: 12px;
+}
+
+.share-label{
+    
+  font-size: 1.5rem;
+}
+.blog-share-row {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.share-icons {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.share-icons .icon {
+  font-size: 17px;
+  
+  
+}
+
+
+
+.blog-tags {
+  margin-top: 10px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+ 
+}

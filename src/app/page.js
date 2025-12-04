@@ -443,12 +443,12 @@ useEffect(() => {
           </div>
 
           <div className="find d-flex justify-content-end gap-3 mt-4">
-            <button className="btn btn-outline-light btn-lg rounded-pill px-4">
+            <Link href="/pages/projects" className="btn btn-outline-light btn-lg rounded-pill px-4">
               Find Work
-            </button>
-            <button className="btn btn-success btn-lg rounded-pill px-4">
+            </Link>
+            <Link href="/pages/services" className="btn btn-success btn-lg rounded-pill px-4">
               Find Talent
-            </button>
+            </Link>
           </div>
         
       </section>
@@ -600,7 +600,7 @@ useEffect(() => {
 
           <div className="trending-body">
             <p className="trending-category">{item.category}</p>
-            <Link href="/" className="trending-title-link">
+            <Link href="/pages/services" className="trending-title-link">
   {item.title}
 </Link>
 
@@ -649,7 +649,7 @@ useEffect(() => {
         from quick turnarounds to big transformations.
       </p>
 
-      <Link href="/pages/freelancerdashboard" className="client-btn">
+      <Link href="/pages/services" className="client-btn">
         All services →
       </Link>
     </div>
@@ -665,7 +665,7 @@ useEffect(() => {
         from quick turnarounds to big transformations.
       </p>
 
-      <Link href="/pages/contact" className="client-btn">
+      <Link href="/pages/projects" className="client-btn">
         Projects →
       </Link>
     </div>
@@ -747,7 +747,7 @@ useEffect(() => {
           desc: "A complete guide to starting a small business online"
         },
       ].map((item, i) => (
-        <div className="blog-card fade-up" key={i}>
+        <Link href="/pages/blogSingle" className="blog-card fade-up" key={i}>
           <div className="blog-img">
             <Image src={item.img} alt="blog" width={500} height={210} />
           </div>
@@ -757,11 +757,11 @@ useEffect(() => {
           <h6 className="blog-title fw-semibold p-2">{item.title}</h6>
 
           <p className="small text-muted p-2">{item.desc}</p>
-        </div>
+        </Link>
       ))}
     </div>
     <div className="trending-bottom">
-    <Link href="/pages/blog" className="trending-link">
+    <Link href="/pages/blogs" className="trending-link">
       All Categories →
     </Link>
   </div>
