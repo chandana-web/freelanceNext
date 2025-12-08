@@ -1,0 +1,88 @@
+.dashboard-sidebar {
+  position: fixed;
+  top: 70px; /* under navbar */
+  left: 0;
+  width: 250px;
+  height: calc(100vh - 70px);
+  background: white;
+  border-right: 1px solid #eee;
+  transition: transform 0.3s ease;
+  overflow:hidden;
+  padding: 25px 0px;
+  
+}
+
+
+.dashboard-sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.sidebar-scroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 0 18px;
+}
+
+/* Custom scrollbar */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #cfcfcf;
+  border-radius: 10px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-heading {
+  font-size: 13px;
+  font-weight: 600;
+  color: #999;
+  margin: 18px 10px 10px;
+  text-transform: uppercase;
+}
+
+
+
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 10px;
+  color: #333;
+  font-size: 15px;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.sidebar-item:hover {
+  background: #111;
+  color: #fff;
+  
+}
+
+/* ACTIVE ITEM STYLE */
+.sidebar-item.active {
+  background: #111;
+  color: #fff;
+}
+
+.sidebar-item:hover .sidebar-icon{
+  filter: brightness(0) invert(1);
+}
+
+.sidebar-item.active .sidebar-icon{
+  filter: brightness(0) invert(1);
+}
+
+/* PNG ICON STYLE */
+.sidebar-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}

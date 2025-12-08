@@ -1,0 +1,99 @@
+.dashboard-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  z-index: 1000;
+}
+
+/* LEFT */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Logo + text */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.brand-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
+}
+
+/* SEARCH */
+.nav-search {
+  width: 45%;
+  position: relative;
+}
+
+.nav-search input {
+  width: 100%;
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 10px 45px 10px 15px;
+  font-size: 14px;
+  outline: none;
+}
+
+.nav-search input:focus {
+  border-color: #222;
+}
+
+.search-icon {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  color: #444;
+}
+
+/* RIGHT SIDE ICONS */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-icon {
+  cursor: pointer;
+  color: #073d31;
+  transition: 0.2s ease;
+}
+
+.nav-icon:hover {
+  transform: scale(1.1);
+}
+
+
+/* PROFILE AVATAR */
+.profile-img {
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+  border: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.profile-img:hover {
+  border-color: #073d31;
+}

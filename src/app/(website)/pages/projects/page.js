@@ -361,7 +361,7 @@ const currentProjects = projectList.slice(
     <div className="projects-search">
       <FiSearch className="search-icon" />
       <input type="text" placeholder="Keyword or freelancer name" />
-      <button className="search-btn">Search</button>
+      <button className="projects-search-btn">Search</button>
     </div>
   </div>
 

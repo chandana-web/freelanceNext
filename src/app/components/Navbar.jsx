@@ -9,10 +9,25 @@ import "@/app/styles/navbar.css"
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import {useRouter} from "next/navigation"
+import Image from "next/image";
 
 
 
 const Navbar = () => {
+    const categories = [
+    "All Categories",
+    "Graphics Design",
+    "Digital Marketing",
+    "Writing Translation",
+    "Video Animation",
+    "Music Audio",
+    "Programming Tech",
+    "Business",
+    "Lifestyle",
+    "Trending"
+  ];
+
+  const [active, setActive] = useState(0);
 const router =useRouter()
 useEffect(() => {
     // load bootstrap only on client
@@ -92,15 +107,38 @@ useEffect(() => {
   return () => observer.disconnect();
 }, []);
 
+const [showStickySearch, setShowStickySearch] = useState(false);
+
+useEffect(() => {
+  const hero = document.querySelector(".hero-container");
+  const heroHeight = hero?.offsetHeight || 350;
+
+  const onScroll = () => {
+    if (window.scrollY > heroHeight - 120) {
+      setShowStickySearch(true);
+    } else {
+      setShowStickySearch(false);
+    }
+  };
+
+  window.addEventListener("scroll", onScroll);
+  return () => window.removeEventListener("scroll", onScroll);
+}, []);
+
+
+
+
 
 
   return (
-   <nav className={`navbar navbar-expand-lg px-4 navbar-main ${isServicesPage ? "services-navbar" : ""} ${scrolled ? "navbar-scrolled" : ""}`}>
+    <div className="header">
+   <nav className={`navbar navbar-expand-lg px-4 py-3 navbar-main ${isServicesPage ? "services-navbar" : ""} ${scrolled ? "navbar-scrolled" : ""}`}>
       
       {/* LOGO (Visible on all screens) */}
       <Link className={`navbar-brand d-flex align-items-center gap-2 ${isServicesPage ? "services-navbar" : ""}`}  href="/">
          Go Experts
       </Link>
+      
 
       {/* {showSearch && (
     <div className="mobile-search d-flex d-lg-none align-items-center">
@@ -108,6 +146,19 @@ useEffect(() => {
       <button className="btn btn-success ms-2">🔍</button>
     </div>
   )} */}
+
+  
+  {showStickySearch && (
+    <div className="sticky-search">
+    <input 
+      type="text" 
+      placeholder="Search services..." 
+      className="sticky-search-input"
+      
+    />
+    <Image src="/assets/navsearch4.png" width={20} height={20} alt=""/>
+    </div>
+  )}
 
 
       {/* MOBILE MENU BUTTON (hidden on desktop) */}
@@ -130,7 +181,7 @@ useEffect(() => {
 
   
 </div>
-        <ul className="navbar-nav mx-auto gap-4">
+        <ul className="navbar-nav mx-auto gap-3">
 
           <li className="nav-item">
             <Link className="nav-link" href="/">Home</Link>
@@ -166,6 +217,10 @@ useEffect(() => {
               <li><Link className="dropdown-item" href="/pages/terms&conditions">Terms & Conditions</Link></li>
               <li><Link className="dropdown-item" href="/pages/blogs">Blogs</Link></li>
             </ul>
+          </li>
+
+          <li className="nav-item">
+            <Link className="nav-link" href="/dashboard">Profile</Link>
           </li>
         </ul>
 
@@ -278,6 +333,19 @@ useEffect(() => {
 </div>
       </div>
     </nav>
+     <div className="category-nav">
+      {categories.map((cat, i) => (
+        <button
+          key={i}
+          className={`category-item ${active === i ? "active" : ""}`}
+          onClick={() => setActive(i)}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+
+    </div>
 
 
   )

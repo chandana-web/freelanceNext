@@ -1,0 +1,20 @@
+/* CONTENT AREA */
+.dashboard-body {
+  display: flex;
+  margin-top: 70px; /* below navbar */
+  background-color: #f0efec;
+}
+
+.dashboard-content {
+  width: 100%;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+.dashboard-content.expanded {
+  margin-left: 250px;
+}
+
+.dashboard-content.collapsed {
+  margin-left: 0;
+}

@@ -1,8 +1,8 @@
 .projectpro-hero{
-  position: relative;
+ 
   background: #fdece5; /* light peach */
   padding: 1px 20px;
-  height: 50vh;
+  height: 75vh;
   overflow: hidden;
   top:0;
   width: 100%;
@@ -27,11 +27,10 @@
 /* Right decorative shape */
 .projectpro-hero-right-img {
   position: absolute;
-  bottom: 0;
+  bottom: 9.2rem;
   right: 0;
   width: 350px;
-  pointer-events: none;
-  animation: float 5s ease-in-out infinite alternate;
+  
 }
 
 /* Content layout */

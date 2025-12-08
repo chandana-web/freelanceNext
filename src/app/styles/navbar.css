@@ -1,5 +1,7 @@
+
+
 .navbar-custom {
-  background: transparent !important;
+  background: black !important;
   position: sticky;
   width: 100%;
   top: 0;
@@ -15,7 +17,7 @@
 }
 
 .navbar-tabs{
-    margin-left: 450px;
+    margin-left: 40px;
 }
 
 .navbar-main {
@@ -23,20 +25,28 @@
   width: 100%;
   position: fixed !important;   /* makes it stick */
   top: 0;
-  z-index: 2000;
-  background: transparent;
+  z-index: 10 !important;
+  padding-bottom: 15px ;
+  background: black;
   transition: all 0.4s ease;
+   
+
 }
 
+
 /* Navbar when scrolled */
-.navbar-scrolled {
+.navbar.navbar-scrolled {
   background: rgba(0, 0, 0, 0.65); /* translucent black */
   backdrop-filter: blur(5px);
 }
 
+.navbar-brand{
+  color: #ddd !important;
+}
 
-.nav-link, .navbar-brand {
-  color: black !important;
+
+.nav-link {
+  color: black;
   font-weight: 600;
 }
 
@@ -113,6 +123,94 @@
   height: 35px;
   font-size: 15px;
 }
+
+.category-nav {
+  width: 100%;
+  background: transparent !important;
+  padding: 12px 40px 4px 50px;
+  border-bottom: 1px solid #222;
+  border-top: 1px solid #222;
+  
+  display: flex;
+  overflow-x: auto;
+  gap: 30px;
+  white-space: nowrap;
+  position: absolute;
+ top: 70px;
+ left: 0;
+  z-index: 5;
+   /* adjust based on navbar height */
+
+   mix-blend-mode: difference;
+ 
+}
+
+.category-item {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  cursor: pointer !important;
+  padding: 6px 0;
+  position: relative;
+}
+
+.category-item:hover {
+  color: #198754;
+}
+
+.category-item.active {
+  color: #198754;
+  font-weight: 600;
+}
+
+/* underline animation */
+.category-item.active::after,
+.category-item:hover::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: #ddd;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.sticky-search {
+  background: transparent;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  padding: 6px 15px;
+  font-size: 14px;
+  margin-left: 50px;
+  width: 300px;
+  transition: width .3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sticky-search-input{
+  position: relative;
+  background: transparent;
+  border: none !important;
+  padding: 3px 0px;
+  border-radius: 999px;
+  width: 100%;
+  outline: none;
+}
+
+.sticky-search-input:focus {
+  border-style: hidden;
+  border: none !important;
+
+
+}
+
+
 
 @media(min-width: 992px) {
   .mobile-search {

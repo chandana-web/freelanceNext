@@ -43,48 +43,7 @@ const FreelancerProfile = () => {
   const totalReviews = 3014;
 
 
-    const [activeTab, setActiveTab] = useState("services");
-  const [tabWidth, setTabWidth] = useState(0);
 
-  const [shrinkHero, setShrinkHero] = useState(false);
-  const MOBILE_BREAKPOINT=900;
-
-useEffect(() => {
-  const handleScroll = () => {
-    if(window.innerWidth>MOBILE_BREAKPOINT){
-
-    
-    if (window.scrollY > 120) {
-      setShrinkHero(true);
-    } else {
-      setShrinkHero(false);
-    }
-    }
-  };
-
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, []);
-
-
-  const aboutRef = useRef(null);
-  const educationRef = useRef(null);
-  const portfolioRef = useRef(null);
-  const experienceRef = useRef(null);
-  const reviewsRef = useRef(null);
-  const recommendationsRef = useRef(null);
-  const tabsRef = useRef([]);
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
-
-  const tabs = [
-    { id: "about", label: "About Me", ref: aboutRef },
-    { id: "education", label: "Education", ref: educationRef },
-    { id: "experience", label: "Work Experience", ref: experienceRef },
-    { id: "portfolio", label: "Portfolio", ref: portfolioRef },
-    
-    { id: "reviews", label: "Reviews", ref: reviewsRef },
-    { id: "recommendations", label: "Recommendations", ref: recommendationsRef },
-  ];
 
    const images = [
     "/assets/freprofilepro1.webp",
@@ -128,34 +87,34 @@ useEffect(() => {
     price: "$983",
   },]
 
-  const handleScrollTo = (ref, id) => {
-    setActiveTab(id);
-    window.scrollTo({
-      top: ref.current.offsetTop - 100,
-      behavior: "smooth",
-    });
-  };
+  // const handleScrollTo = (ref, id) => {
+  //   setActiveTab(id);
+  //   window.scrollTo({
+  //     top: ref.current.offsetTop - 100,
+  //     behavior: "smooth",
+  //   });
+  // };
 
-  useEffect(() => {
-    // update dynamic tab width
-    if (tabsRef.current[0]) {
-      setTabWidth(tabsRef.current[0].offsetWidth);
-    }
+  // useEffect(() => {
+  //   // update dynamic tab width
+  //   if (tabsRef.current[0]) {
+  //     setTabWidth(tabsRef.current[0].offsetWidth);
+  //   }
 
-    const handleScroll = () => {
-      tabs.forEach((tab) => {
-        if (!tab.ref.current) return;
-        const secTop = tab.ref.current.offsetTop - 120;
-        if (window.scrollY >= secTop) {
-          setActiveTab(tab.id);
-        }
-      });
-    };
+  //   const handleScroll = () => {
+  //     tabs.forEach((tab) => {
+  //       if (!tab.ref.current) return;
+  //       const secTop = tab.ref.current.offsetTop - 120;
+  //       if (window.scrollY >= secTop) {
+  //         setActiveTab(tab.id);
+  //       }
+  //     });
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
 
-  }, [tabs]);
+  // }, [tabs]);
 
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -186,12 +145,12 @@ useEffect(() => {
   
   return (
     <div>
-        <section  className={`freelancer-hero ${shrinkHero ? "shrink" : ""}`}>
+        <section  className="freelancer-hero">
         <Image src="/assets/frproheroleft.png"  className="hero-left-img" width={280} height={280} alt="" />
         <Image src="/assets/frproheroright.png" className="hero-right-img" width={350} height={350} alt="" />
 
-        <div className={`freelancer-hero-content ${shrinkHero ? "shrink" : ""}`}>
-          <h1 className={`hero-title ${shrinkHero ? "hide-title" : ""}`}>I will design website UI UX in Adobe XD or Figma</h1>
+        <div className="freelancer-hero-content">
+          <h1 className="hero-title">I will design website UI UX in Adobe XD or Figma</h1>
 
           <div className="profile-row">
             <Image src="/assets/freproheroava.webp" className="profile-img" width={50} height={50} alt="" />
@@ -216,7 +175,7 @@ useEffect(() => {
         </div>
 
         {/* Sticky Tab Navigation */}
-        <div className="sticky-tabs">
+        {/* <div className="sticky-tabs">
           {tabs.map((tab, index) => (
             <button
               key={tab.id}
@@ -226,10 +185,10 @@ useEffect(() => {
             >
               {tab.label}
             </button>
-          ))}
+          ))} */}
 
           {/* Animated Indicator */}
-          <div
+          {/* <div
             className="tab-indicator"
             style={{
               transform: `translateX(${
@@ -238,11 +197,11 @@ useEffect(() => {
               width: tabWidth,
             }}
           />
-        </div>
+        </div> */}
       </section>
             <div className='profile-layout'>
       <main className="profile-main">
-    <section ref={aboutRef} className="section" id='about'>
+    <section className="section" id='about'>
         <div className="stats-row">
     <div className="stat-box">
       <Image src="/assets/freegoal.png" width={38} height={38} alt="" />
@@ -295,7 +254,7 @@ useEffect(() => {
 
     </section>
 
-    <section ref={educationRef} id="education" className="section">
+    <section  id="education" className="section">
         <h3 className="section-heading">Education</h3>
 
   <div className="timeline">
@@ -340,7 +299,7 @@ useEffect(() => {
   <hr className="divider" />
     </section>
     
-    <section ref={experienceRef} className="section">
+    <section  className="section">
         <h3 className="section-heading">Work & Experience</h3>
 
   <div className="timeline">
@@ -385,7 +344,7 @@ useEffect(() => {
     </section>
 
 
-    <section ref={portfolioRef} className="section">
+    <section  className="section">
         <h3 className="section-heading">Featured Services</h3>
         <div
       className="free-trending-wrapper"
@@ -437,7 +396,7 @@ useEffect(() => {
     </section>
 
     <hr className="divider" />
-    <section ref={reviewsRef} className="section">
+    <section  className="section">
         <h3 className="section-heading">Reviews</h3>
         <div className="reviews-section">
       {/* Top: Summary + Breakdown */}
@@ -502,7 +461,7 @@ useEffect(() => {
     </section>
 
     <hr className="divider" />
-    <section ref={recommendationsRef} className="section">
+    <section className="section">
 
         <div className="review-form-section">
       <h3 className="review-form-title">Add a Review</h3>

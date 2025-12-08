@@ -129,7 +129,7 @@ const Blogs = () => {
       {/* Blog Cards Grid */}
       <div className="blogpage-grid">
         {filteredBlogs.map((item, i) => (
-          <Link href="/pages/blogSingle" className="blogpage-card fade-up" key={i}>
+          <Link key={i} href="/pages/blogSingle" className="blogpage-card" >
             <div className="blogpage-img">
               <Image src={item.img} alt="blog" width={500} height={210} />
             </div>
