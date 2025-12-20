@@ -2,7 +2,7 @@ import { initializeApp, getApps } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
-  OAuthProvider
+  OAuthProvider,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -12,20 +12,19 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
 };
 
+let app;
+let auth;
 
-// Avoid duplicate Firebase initialization
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+// ✅ ONLY initialize Firebase in the browser
+if (typeof window !== "undefined") {
+  app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+  auth = getAuth(app);
+}
 
-// 🔥 Export single auth instance
-export const auth = getAuth(app);
+// ✅ Providers (safe to export)
+const googleProvider = new GoogleAuthProvider();
+const appleProvider = new OAuthProvider("apple.com");
 
-// 🔥 Export providers
-export const googleProvider = new GoogleAuthProvider();
-export const appleProvider = new OAuthProvider("apple.com");
-
-export default app;
-
-
+export { app, auth, googleProvider, appleProvider };
