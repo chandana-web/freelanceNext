@@ -316,60 +316,24 @@ canvas {
 .activity-title { margin: 0; font-weight: 600; font-size: 13px; }
 .activity-desc { color: #666;font-size: 10px; }
 
-.activity-timeline {
-  position: relative;
-  padding-left: 30px;
-  margin-top: 10px;
-}
-
-/* Background line */
-.activity-timeline::before {
+.activity-dot::after {
   content: "";
   position: absolute;
-  left: 6rem;   /* aligns center with dots */
-  top: 18px;    /* starts from first dot */
-  bottom: 20px; /* ends above last dot */
+  top: 12px;   /* Starts just under the dot */
+  left: 50%;
+  transform: translateX(-50%);
   width: 2px;
-  background: #dcdcdc;
+  height: calc(100% + 90px); /* Length of line between rows */
+  background: #7a7a7a;
+  z-index: 3;
 }
-.activity-timeline.last-child::before {
+
+/* Remove line for last item */
+.activity-dot.last::after {
+  
   display: none;
+  
 }
-
-
-/* Each row */
-.activity-row {
-  display: grid;
-  grid-template-columns: 50px 20px auto;
-  align-items: start;
-  padding: 20px 0;
-}
-
-/* Dot */
-.activity-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  position: relative;
-  z-index: 2; /* sits above line */
-}
-
-.activity-time {
-  color: #666;
-  font-size: 12px;
-}
-
-.activity-title {
-  font-weight: 600;
-  margin: 0;
-  font-size: 14px;
-}
-
-.activity-desc {
-  font-size: 11px;
-  color: #777;
-}
-
 
 
 /* Make cards full width on mobile/tablet */

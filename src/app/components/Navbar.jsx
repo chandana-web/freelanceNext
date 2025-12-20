@@ -225,8 +225,8 @@ useEffect(() => {
         </ul>
 
         <div className="d-flex gap-2">
-          <Link href="/pages/signin" className={`btn btn-outline-light px-4 rounded ${isServicesPage ? "services-navbar" : ""}`}>Sign In</Link>
-          <Link href="/pages/register" className="btn btn-light px-4 rounded">Join</Link>
+          <Link href="/auth/signin" className={`btn btn-outline-light px-4 rounded ${isServicesPage ? "services-navbar" : ""}`}>Sign In</Link>
+          <Link href="/auth/register" className="btn btn-light px-4 rounded">Join</Link>
         </div>
       </div>
 

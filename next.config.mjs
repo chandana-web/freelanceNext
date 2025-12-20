@@ -3,7 +3,7 @@ const nextConfig = {
   /* config options here */
   reactCompiler: true,
   domains: [
-    'picsum.photos'
+    "https://freelancing-experts-gjbi.vercel.app/api/users/register"
   ]
 };
 

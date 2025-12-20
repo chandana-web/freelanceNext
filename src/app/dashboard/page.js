@@ -91,6 +91,25 @@ const labels = activeFilter === "This Week"
   const chartOptions = {
     responsive: true,
     // maintainAspectRatio: false,
+      animation: {
+    duration: 2000,
+    easing: "easeInOutQuad",
+    onProgress: function(animation) {
+      const chartInstance = animation.chart;
+      const ctx = chartInstance.ctx;
+      ctx.save();
+    }
+  },
+
+  elements: {
+    line: {
+      tension: 0.4, // smooth curve
+    },
+    point: {
+      radius: 4,
+      hitRadius: 10,
+    }
+  },
     
     plugins: {
       legend: {
@@ -111,7 +130,9 @@ const labels = activeFilter === "This Week"
         grid: { 
           color: "#eee",
           drawOnChartArea: true  // shows grid above fill
-        } 
+          
+        },
+        beginAtZero: true,
       }
     }
   };
@@ -192,6 +213,12 @@ const labels = activeFilter === "This Week"
         ],
       }}
       options={{
+        animation: {
+      animateRotate: true,
+      animateScale: true,
+      duration: 1500,
+      easing: "easeOutCirc",
+    },
         plugins: { legend: { display: false } },
         maintainAspectRatio: false,
       }}
@@ -261,27 +288,22 @@ const labels = activeFilter === "This Week"
     </div>
     <hr />
 
-    <div className="activity-timeline">
-
-  {[
-    { time: "08:42", text:"Purchase by Ali Price", desc:"Product noise evolve smartwatch", color:"#4CAF50" },
-    { time: "14:37", text:"Make deposit USD 700 to TFN", desc:"", color:"#FF7070" },
-    { time: "16:50", text:"Natasha Carey have liked the products", desc:"Allow users to like products.", color:"#468CFF" },
-    { time: "21:03", text:"Favorited Product", desc:"Esther James favorited product.", color:"#C57FFF" },
-    { time: "23:07", text:"Today offers by Digitech Galaxy", desc:"Offer valid on orders above 500.", color:"#FFA825" }
-  ].map((item,i)=>(
-    <div className="activity-row" key={i}>
-      <div className="activity-time">{item.time}</div>
-      <div className="activity-dot" style={{ background:item.color }}></div>
-      <div>
-        <p className="activity-title">{item.text}</p>
-        {item.desc && <small className="activity-desc">{item.desc}</small>}
+    {[
+      { time: "08:42", text: "Purchase by Ali Price", desc: "Product noise evolve smartwatch", color:"#4CAF50" },
+      { time: "14:37", text: "Make deposit USD 700 to TFN", desc: "", color:"#FF7070" },
+      { time: "16:50", text: "Natasha Carey have liked the products", desc:"Allow users to like products in your WooCommerce store.", color:"#468CFF" },
+      { time: "21:03", text: "Favorited Product", desc:"Esther James have favorited product.", color:"#C57FFF" },
+      { time: "23:07", text: "Today offers by Digitech Galaxy", desc:"Offer valid on orders of Rs.500+", color:"#FFA825" }
+    ].map((item,i)=>(
+      <div className="activity-row" key={i}>
+        <div className="activity-time">{item.time}</div>
+        <div className={`activity-dot ${i === 4 ? "last" : ""}`} style={{ background: item.color }}></div>
+        <div className="activity-details">
+          <p className="activity-title">{item.text}</p>
+          {item.desc && <small className="activity-desc">{item.desc}</small>}
+        </div>
       </div>
-    </div>
-  ))}
-
-</div>
-
+    ))}
   </div>
 
 </div>
