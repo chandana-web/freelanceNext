@@ -503,6 +503,29 @@ small {
 
 }
 
+.otp-inputs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.otp-inputs input {
+  width: 42px;
+  height: 48px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.otp-inputs input:focus {
+  outline: none;
+  border-color: #1b2f74;
+}
+
+
 
 
 .continue-btn:hover {

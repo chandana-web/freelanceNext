@@ -10,8 +10,9 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   reload, 
+  updateEmail
 } from "firebase/auth";
-import { registerCustomer, registerFreelancer, getFreelancerCategories, registerCompany } from "@/app/api/authRegisterApi";
+import { registerCustomer, registerFreelancer, getFreelancerCategories, registerCompany, sendEmailOtp, verifyEmailOtp } from "@/app/api/authRegisterApi";
 // import { registerCompany } from "@/app/api/registerCompany";
 
 import React from 'react'
@@ -67,6 +68,10 @@ const Register = () => {
 
   const [errors, setErrors] = useState({});
   const [otpPopup, setOtpPopup] = useState(false);
+
+const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+const [otpLoading, setOtpLoading] = useState(false);
+
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
 
@@ -85,6 +90,11 @@ const [addrProof1Name, setAddrProof1Name] = useState("");
 const [addrProof2Name, setAddrProof2Name] = useState("");
 const [addrProof1Progress, setAddrProof1Progress] = useState(0);
 const [addrProof2Progress, setAddrProof2Progress] = useState(0);
+
+const [verifiedEmail, setVerifiedEmail] = useState(null);
+const isCustomer = formData.role === "I am a Customer";
+
+
 
 
 
@@ -150,6 +160,26 @@ function CircularProgressWithLabel({ value }) {
 
 //   return json.secure_url;
 // };
+
+
+const submitCustomerRegistration = async () => {
+  const payload = {
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    email: formData.email,
+    phoneNumber: formData.primaryPhone,
+    altPhoneNumber: formData.altPhone || "",
+    password: formData.password,
+  };
+
+  try {
+    const result = await registerCustomer(payload);
+    return result;
+  } catch (error) {
+    console.error("Customer registration error:", error);
+    return { success: false, message: "Registration failed" };
+  }
+};
 
 
 
@@ -244,6 +274,20 @@ useEffect(() => {
 
   loadCategories();
 }, []);
+
+useEffect(() => {
+  if (
+    otpVerified &&
+    verifiedEmail &&
+    formData.email !== verifiedEmail
+  ) {
+    setOtpVerified(false);
+    setOtpSent(false);
+    setVerifiedEmail(null);
+  }
+}, [formData.email]);
+
+
 
 const handleCategoryChange = (e) => {
   const categoryId = e.target.value;
@@ -392,7 +436,7 @@ const handleFileUpload = (e, field) => {
 const handleFreelancerSubmit = async () => {
 
   if (!validateFreelancerForm()) {
-    alert("Please fill all required freelancer details");
+    // alert("Please fill all required freelancer details");
     return;
   }
   const result = await submitFreelancerRegistration();
@@ -430,7 +474,7 @@ const handleAppleSignUp = async () => {
 const handleCompanySubmit = async () => {
 
     if (!validateEmployerForm()) {
-    alert("Please fill all required company details");
+    // alert("Please fill all required company details");
     return;
   }
   const result = await submitCompanyRegistration();
@@ -611,7 +655,7 @@ const validateEmployerForm = () => {
 
   // -------- Address --------
   if (!employer.fullAddress) e.fullAddress = "Address required";
-  if (!employer.addressProof1) e.addressProof1 = "Address proof required";
+  if (!employer.addressProof1) e.addressProof1 = "Atleast one Address proof required";
 
   // -------- Business --------
   if (!employer.businessEmail) e.businessEmail = "Business email required";
@@ -624,60 +668,55 @@ const validateEmployerForm = () => {
 
 
 const handleSendOtp = async () => {
+  if (!formData.email) {
+    alert("Enter email first");
+    return;
+  }
+
   try {
-    if (!formData.email || !formData.password) {
-      return alert("Enter email and password first");
+    const res = await sendEmailOtp(formData.email);
+
+    if (res.data?.success) {
+      setOtpPopup(true);
+      alert("OTP sent to your email");
+    } else {
+      alert(res.data?.message || "Failed to send OTP");
     }
-
-    let user;
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
-      user = userCredential.user;
-    } catch (err) {
-      if (err.code === "auth/email-already-in-use") {
-        const { signInWithEmailAndPassword } = await import("firebase/auth");
-        const loginUser = await signInWithEmailAndPassword(
-          auth,
-          formData.email,
-          formData.password
-        );
-        user = loginUser.user;
-      } else {
-        console.log(err);
-        return;
-      }
-    }
-
-    await sendEmailVerification(user);
-
-    setOtpSent(true);
-    setOtpPopup(true);
-    alert("Verification link sent! Check your email.");
-
-  } catch (error) {
-    console.log("Full error:", error);
+  } catch (err) {
+    console.error(err);
+    alert("Error sending OTP");
   }
 };
-
-
-
 
 const handleOtpVerify = async () => {
-  await reload(auth.currentUser);
+  const code = otp.join("");
 
-  if (auth.currentUser.emailVerified) {
-    setOtpVerified(true);
-    setOtpPopup(false);
-    alert("Email verified successfully!");
-  } else {
-    alert("Not verified yet. Refresh your inbox, click link, then try again.");
+  if (code.length !== 6) {
+    alert("Enter 6 digit OTP");
+    return;
+  }
+
+  try {
+    setOtpLoading(true);
+
+    const res = await verifyEmailOtp(formData.email, code);
+
+    if (res.data?.success) {
+      setOtpVerified(true);
+      setVerifiedEmail(formData.email);
+      setOtpPopup(false);
+      alert("Email verified successfully ✔");
+    } else {
+      alert(res.data?.message || "Invalid OTP");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("OTP verification failed");
+  } finally {
+    setOtpLoading(false);
   }
 };
+
 
 
 
@@ -716,7 +755,7 @@ const handleContinue = async () => {
   }
 
   if (formData.role === "I am an Employer") {
-    console.log("Employer selected → skip customer API");
+    // console.log("Employer selected → skip customer API");
     setStep(2);
     return;
   }
@@ -808,6 +847,35 @@ const idLabel1 = getIdLabel(freelancer.idType2);
   // const [category, setCategory] = useState("");
   // const [subCategory, setSubCategory] = useState("");
   const [skill, setSkill] = useState("");
+
+  const handleOtpChange = (e, index) => {
+  const value = e.target.value.replace(/\D/, "");
+  if (!value) return;
+
+  const newOtp = [...otp];
+  newOtp[index] = value;
+  setOtp(newOtp);
+
+  // auto focus next
+  if (index < 5) {
+    document.querySelectorAll(".otp-inputs input")[index + 1].focus();
+  }
+};
+
+const handleOtpBackspace = (e, index) => {
+  if (e.key === "Backspace") {
+    const newOtp = [...otp];
+    newOtp[index] = "";
+    setOtp(newOtp);
+
+    if (index > 0) {
+      document.querySelectorAll(".otp-inputs input")[index - 1].focus();
+    }
+  }
+};
+
+
+  
 
   return (
      <div className="auth-wrapper">
@@ -951,6 +1019,9 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
   </Typography>
 </Box>
 
+
+<Box display="flex" justifyContent="center" flexDirection="column">
+
       <Box
   sx={{
     display: "flex",
@@ -1041,8 +1112,24 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         <span>{item.label}</span>
       </Box>
     );
+    
   })}
+   
+ 
+
 </Box>
+</Box>
+{errors.role && (
+  <Typography
+    color="error"
+    fontSize={12}
+    mt={3}
+    textAlign="center"
+  >
+    Please select a role
+  </Typography>
+  
+)}
 
 
 
@@ -1061,6 +1148,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         {/* -------- ROW 1 -------- */}
         <Grid container spacing={2} display="flex" justifyContent="center" alignItems="center" gap={8}>
   <Grid item xs={6} >
+    <Box>
     <Box
     sx={{
         display: "flex",
@@ -1082,13 +1170,20 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       onChange={handleChange}
       fullWidth
       
-      error={!!errors.firstName}
-      helperText={errors.firstName}
+      error={!!errors.firstName }
+      helperText={""}
     />
     </Box>
+    {errors.firstName && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {errors.firstName}
+    </Box>
+  )}
+  </Box>
+
   </Grid>
 
- 
+ <Box>
     <Box
     sx={{
         display: "flex",
@@ -1108,9 +1203,18 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       onChange={handleChange}
       fullWidth
       error={!!errors.lastName}
-      helperText={errors.lastName}
+      helperText={""}
     />
+
+    
+
     </Box>
+    {errors.lastName && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {errors.lastName}
+    </Box>
+  )}
+  </Box>
   
 </Grid>
 
@@ -1122,7 +1226,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
     {/* <Typography fontSize={14} fontWeight={600} mb={0.5} color="#1b2f74">
       Primary Phone Number *
     </Typography> */}
-
+<Box>
     <Box
       sx={{
         display: "flex",
@@ -1162,6 +1266,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         </Select>
       </FormControl>
 
+
       <Box
     sx={{
         display: "flex",
@@ -1185,15 +1290,21 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       
       fullWidth
       error={!!errors.primaryPhone}
-      helperText={errors.primaryPhone}
+      helperText={""}
     />
     </Box>
+    
+
 
     </Box>
-
     {errors.primaryPhone && (
-      <FormHelperText error>{errors.primaryPhone}</FormHelperText>
-    )}
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {errors.primaryPhone}
+    </Box>
+  )}
+  </Box>
+
+    
 
     
     <Box
@@ -1325,7 +1436,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
     >
       Email Address *
     </Typography> */}
-
+<Box>
       <Box
     sx={{
         display: "flex",
@@ -1348,7 +1459,8 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       
       fullWidth
       error={!!errors.email}
-      helperText={errors.email}
+      helperText={""}
+      disabled={otpVerified}
     />
     </Box>
 
@@ -1359,6 +1471,10 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         {errors.email}
       </Typography>
     )}
+    </Box>
+
+    
+
   </Grid>
 
   {/* -------- Verify Email -------- */}
@@ -1418,7 +1534,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
   justifyContent="center"
   alignItems="center"
   gap={8}  px={1}>
-    
+    <Box>
     <Box
       sx={{
         display: "flex",
@@ -1440,14 +1556,21 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         onChange={handleChange}
         fullWidth
         error={!!errors.password}
-        helperText={errors.password}
+        helperText={""}
         
       />
     </Box>
+    {errors.password && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {errors.password}
+    </Box>
+  )}
+  </Box>
   
 
   {/* -------- Confirm Password -------- */}
   <Grid item xs={6} >
+    <Box>
     <Box
       sx={{
         display: "flex",
@@ -1468,17 +1591,25 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         onChange={handleChange}
         fullWidth
         error={!!errors.confirmPassword}
-        helperText={errors.confirmPassword}
+        
         
         
       />
     </Box>
+    {errors.confirmPassword && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {errors.confirmPassword}
+    </Box>
+  )}
+  </Box>
+
   </Grid>
   </Grid>
 </Grid>
 
 <div className="continue">
-        <button className="cssbuttons-io-button" onClick={handleContinue}>Continue
+        <button className="cssbuttons-io-button" onClick={handleContinue}>{isCustomer ? "Register" : "Continue"}
+
           <div className="icon">
             <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"></path><path d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z" fill="currentColor"></path></svg>
           </div>
@@ -1518,19 +1649,31 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
   <div className="otp-popup">
     <div className="otp-box">
       <h3>Email Verification</h3>
-      
 
+      <div className="otp-inputs">
+        {otp.map((digit, index) => (
+          <input
+            key={index}
+            type="text"
+            maxLength={1}
+            value={digit}
+            onChange={(e) => handleOtpChange(e, index)}
+            onKeyDown={(e) => handleOtpBackspace(e, index)}
+          />
+        ))}
+      </div>
 
-      <button onClick={handleOtpVerify}>Verify</button>
+      <button onClick={handleOtpVerify} disabled={otpLoading}>
+        {otpLoading ? "Verifying..." : "Verify OTP"}
+      </button>
 
-      {/* <button className="resend-btn" onClick={handleResend}>
-        Resend OTP
-      </button> */}
-
-      <button className="cancel" onClick={() => setOtpPopup(false)}>Close</button>
+      <button className="cancel" onClick={() => setOtpPopup(false)}>
+        Close
+      </button>
     </div>
   </div>
 )}
+
 
 {step === 2 && (
       <div className="role-card">
@@ -1593,62 +1736,60 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         <MenuItem value="DL">Driving License</MenuItem>
       </Select>
 
-      {freelancerErrors.idType1 && (
-        <FormHelperText>{freelancerErrors.idType1}</FormHelperText>
-      )}
+      
+       {freelancerErrors.idType1 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.idType1}
+    </Box>
+  )}
     </FormControl>
   </Grid>
 
   {/* ---------- ID NUMBER ---------- */}
-  <Grid item xs={12} md={6}>
+  
     {/* <Typography fontSize={14} fontWeight={600} mb={0.5}>
       {idLabel} *
     </Typography> */}
+<Grid item xs={12} md={6}>
+      <Box>
+      <Box
+        sx={{
+          display: "flex",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          overflow: "hidden",
+          height: 40,
+          width: 230,
+          alignItems: "center",
+          justifyContent: "center",
 
-
-    <Box
-      sx={{
-        display: "flex",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        overflow: "hidden",
-        height: 40,
-        width: 230,
-        alignItems: "center",
-        justifyContent: "center",
-
-        "&:hover":{
-        border: "1px solid #1b2f74"
-      }
-        
-      }}
-    >
-      <TextField
-        type="text"
-        label={idLabel} 
-        name={idLabel}
-        value={freelancer.idNumber1}
-        onChange={(e) => updateFreelancer("idNumber1", e.target.value)}
-        fullWidth
-        error={!!freelancerErrors.idNumber1}
-      helperText={freelancerErrors.idNumber1}
-        
-      />
+          "&:hover": {
+            border: "1px solid #1b2f74",
+          },
+        }}
+      >
+        <TextField
+          type="text"
+          label={idLabel}
+          value={freelancer.idNumber1}
+          onChange={(e) => updateFreelancer("idNumber1", e.target.value)}
+          fullWidth
+          error={!!freelancerErrors.idNumber1}
+      helperText={""}
+        />
+      </Box>
+      {freelancerErrors.idNumber1 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.idNumber1}
     </Box>
+  )}
+  </Box>
 
-    {/* <TextField
-      fullWidth
-      size="small"
-      placeholder={idLabel}
-      value={freelancer.idNumber1}
-      onChange={(e) => updateFreelancer("idNumber1", e.target.value)}
-      error={!!freelancerErrors.idNumber1}
-      helperText={freelancerErrors.idNumber1}
-    /> */}
-  </Grid>
+    </Grid>
 </Grid>
 
 {/* ---------- FILE UPLOAD ---------- */}
+
 <Box
   sx={{
     display: "flex",
@@ -1657,6 +1798,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
   }}
 >
   {/* FRONT IMAGE */}
+  <Box>
   <Box
     sx={{
       width: 100,
@@ -1698,7 +1840,16 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
     }}
   />
 
+  {freelancerErrors.idFront1 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.idFront1}
+    </Box>
+  )}
+  </Box>
+  
+
   {/* BACK IMAGE */}
+  <Box>
   <Box
     sx={{
       width: 100,
@@ -1739,6 +1890,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       setBackImagePreview(URL.createObjectURL(file));
     }}
   />
+  {freelancerErrors.idBack1 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.idBack1}
+    </Box>
+  )}
+  </Box>
 </Box>
 </Box>
 
@@ -1781,11 +1938,17 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           <MenuItem value="AADHAAR">Aadhaar Card</MenuItem>
           <MenuItem value="PASSPORT">Passport</MenuItem>
         </Select>
+        {freelancerErrors.idType2 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.idType2}
+    </Box>
+  )}
       </FormControl>
     </Grid>
 
     {/* ---------- ID NUMBER ---------- */}
     <Grid item xs={12} md={6}>
+      <Box>
       <Box
         sx={{
           display: "flex",
@@ -1808,8 +1971,17 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           value={freelancer.idNumber2}
           onChange={(e) => updateFreelancer("idNumber2", e.target.value)}
           fullWidth
+          error={!!freelancerErrors.idNumber2}
+      helperText={""}
         />
       </Box>
+      {freelancerErrors.idNumber2 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.idNumber2}
+    </Box>
+  )}
+  </Box>
+
     </Grid>
   </Grid>
 
@@ -1822,6 +1994,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
     }}
   >
     {/* FRONT IMAGE */}
+    <Box>
     <Box
       sx={{
         width: 100,
@@ -1862,8 +2035,15 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         setFrontImagePreview2(URL.createObjectURL(file));
       }}
     />
+    {freelancerErrors.idFront2 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.idFront2}
+    </Box>
+  )}
+  </Box>
 
     {/* BACK IMAGE */}
+    <Box>
     <Box
       sx={{
         width: 100,
@@ -1904,7 +2084,15 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         setBackImagePreview2(URL.createObjectURL(file));
       }}
     />
+    {freelancerErrors.idBack2 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.idBack2}
+    </Box>
+  )}
   </Box>
+    
+  </Box>
+  
 </Box>
 
       
@@ -1939,10 +2127,16 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       <MenuItem value="Training Certificate">Training Certificate</MenuItem>
       <MenuItem value="Experience Letter">Experience Letter</MenuItem>
     </Select>
+    {freelancerErrors.certificateType && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.certificateType}
+    </Box>
+  )}
   </Box>
 
   {/* ---------- CIRCULAR PDF UPLOAD ---------- */}
   <Box>
+    <Box>
   <Box
     sx={{
       // width: 110,
@@ -2013,6 +2207,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       {uploadedFileName}
     </Typography>
   )}
+  {freelancerErrors.experienceCertificates && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.experienceCertificates}
+    </Box>
+  )}
+  </Box>
 </Box>
 </Box>
 
@@ -2090,6 +2290,11 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           setProfilePreview(URL.createObjectURL(file));
         }}
       />
+      {freelancerErrors.selfie && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.selfie}
+    </Box>
+  )}
     </Box>
 
     {/* ---------- LINKEDIN ---------- */}
@@ -2166,6 +2371,11 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           </MenuItem>
         ))}
       </Select>
+      {freelancerErrors.category && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.category}
+    </Box>
+  )}
     </Grid>
 
     {/* SUB CATEGORY */}
@@ -2192,6 +2402,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           </MenuItem>
         ))}
       </Select>
+
+      {freelancerErrors.subCategory && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {freelancerErrors.subCategory}
+    </Box>
+  )}
     </Grid>
   </Grid>
 
@@ -2283,6 +2499,11 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         <MenuItem value="Private Limited">Private Limited</MenuItem>
         <MenuItem value="Public Limited">Public Limited</MenuItem>
       </Select>
+      {employerErrors.orgType && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.orgType}
+    </Box>
+  )}
     </Grid>
 
     {/* ---------- ORGANISATION NAME ---------- */}
@@ -2290,7 +2511,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       {/* <Typography fontSize={14} fontWeight={600} mb={0.5}>
         Organisation Name *
       </Typography> */}
-
+  <Box>
       <Box
         sx={{
           display: "flex",
@@ -2314,7 +2535,14 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         onChange={(e) => updateEmployer("orgName", e.target.value)}
           fullWidth
         />
+
       </Box>
+      {employerErrors.orgName && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.orgName}
+    </Box>
+  )}
+  </Box>
 
       {/* <TextField
         fullWidth
@@ -2357,6 +2585,11 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         <MenuItem value="PAN Card">PAN Card</MenuItem>
         <MenuItem value="Driving License">Driving License</MenuItem>
       </Select>
+      {employerErrors.idType1 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.idType1}
+    </Box>
+  )}
     </Grid>
 
     {/* ---------- ID NUMBER ---------- */}
@@ -2364,7 +2597,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       {/* <Typography fontSize={14} fontWeight={600} mb={0.5}>
         ID Number *
       </Typography> */}
-
+  <Box>
       <Box
         sx={{
           display: "flex",
@@ -2389,6 +2622,13 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           fullWidth
         />
       </Box>
+      {employerErrors.idNumber1 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.idNumber1}
+    </Box>
+  )}
+  </Box>
+
 
       {/* <TextField
         fullWidth
@@ -2402,6 +2642,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
     <Grid item xs={12} md={4}>
       <Box display="flex" gap={2}>
         {/* FRONT */}
+        <Box>
         <Box
           sx={{
             width: 100,
@@ -2443,8 +2684,15 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
             );
           }}
         />
+        {employerErrors.directorFront1 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.directorFront1}
+    </Box>
+  )}
+  </Box>
 
         {/* BACK */}
+        <Box>
         <Box
           sx={{
             width: 100,
@@ -2486,6 +2734,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
             );
           }}
         />
+        {employerErrors.directorBack1 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.directorBack1}
+    </Box>
+  )}
+  </Box>
       </Box>
     </Grid>
   </Grid>
@@ -2527,10 +2781,17 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         <MenuItem value="AADHAAR">Aadhaar Card</MenuItem>
         <MenuItem value="PASSPORT">Passport</MenuItem>
       </Select>
+
+      {employerErrors.idType2 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.idType2}
+    </Box>
+  )}
     </Grid>
 
     {/* ---------- ID NUMBER ---------- */}
     <Grid item xs={12} md={4}>
+      <Box>
       <Box
         sx={{
           display: "flex",
@@ -2554,12 +2815,19 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           fullWidth
         />
       </Box>
+      {employerErrors.idNumber2 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.idNumber2}
+    </Box>
+  )}
+  </Box>
     </Grid>
 
     {/* ---------- UPLOAD BOX ---------- */}
     <Grid item xs={12} md={4}>
       <Box display="flex" gap={2}>
         {/* FRONT */}
+        <Box>
         <Box
           sx={{
             width: 100,
@@ -2601,8 +2869,14 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
             );
           }}
         />
-
+          {employerErrors.directorFront2 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.directorFront2}
+    </Box>
+  )}
+  </Box>
         {/* BACK */}
+        <Box>
         <Box
           sx={{
             width: 100,
@@ -2644,6 +2918,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
             );
           }}
         />
+        {employerErrors.directorBack2 && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.directorBack2}
+    </Box>
+  )}
+  </Box>
       </Box>
     </Grid>
   </Grid>
@@ -2665,7 +2945,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       {/* <Typography fontSize={14} fontWeight={600} mb={1}>
         Company Logo *
       </Typography> */}
-
+  <Box>
       <Box
         sx={{
           width: 110,
@@ -2714,6 +2994,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           );
         }}
       />
+      {employerErrors.logo && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.logo}
+    </Box>
+  )}
+  </Box>
     </Grid>
 
     {/* ---------- COMPANY PHOTOS ---------- */}
@@ -2774,6 +3060,11 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
                 );
               }}
             />
+            {/* {employerErrors. && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.idType2}
+    </Box>
+  )} */}
           </Box>
         ))}
       </Box>
@@ -2820,6 +3111,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         />
       </Box>
 
+      {employerErrors.gstNumber && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.gstNumber}
+    </Box>
+  )}
+
       {/* <TextField
         fullWidth
         size="small"
@@ -2831,6 +3128,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
     {/* ---------- GST PDF UPLOAD ---------- */}
     <Grid item xs={12} md={6}>
       <Box display="flex" alignItems="center">
+        <Box>
         <Box
           sx={{
             borderRadius: "50%",
@@ -2900,6 +3198,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           </Typography>
         )}
       </Box>
+      {employerErrors.gstDocument && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.gstDocument}
+    </Box>
+  )}
+  </Box>
     </Grid>
   </Grid>
 </Box>
@@ -2922,7 +3226,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       {/* <Typography fontSize={14} fontWeight={600} mb={0.5}>
         Full Address *
       </Typography> */}
-
+      <Box>
       <Box
         sx={{
           display: "flex",
@@ -2946,6 +3250,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           fullWidth
         />
       </Box>
+      {employerErrors.fullAddress && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.fullAddress}
+    </Box>
+  )}
+  </Box>
 
       {/* <TextField
         fullWidth
@@ -3111,6 +3421,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
   <Grid container spacing={3}>
     {/* Business Email */}
     <Grid item xs={12} md={4}>
+      <Box>
       <Box
         sx={{
           display: "flex",
@@ -3136,6 +3447,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           fullWidth
         />
       </Box>
+      {employerErrors.businessEmail && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.businessEmail}
+    </Box>
+  )}
+  </Box>
     </Grid>
 
     {/* Business Phone */}
@@ -3169,6 +3486,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
 
     {/* Website / Portfolio */}
     <Grid item xs={12} md={4}>
+      <Box>
       <Box
         sx={{
           display: "flex",
@@ -3194,6 +3512,12 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           fullWidth
         />
       </Box>
+      {employerErrors.businessWebsite && (
+    <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
+      {employerErrors.businessWebsite}
+    </Box>
+  )}
+  </Box>
     </Grid>
     <Grid item xs={12} md={4}>
       <Box

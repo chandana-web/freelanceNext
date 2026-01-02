@@ -16,26 +16,97 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { resetPassword } from "../../api/resetPasswordApi";
+import { useRouter } from "next/navigation";
+
 
 const ResetPassword = () => {
   // --- STATE ---
   const [showPassword, setShowPassword] = useState(false);
-  const [isChanged, setIsChanged] = useState(false);
-  const [passwords, setPasswords] = useState({ password: "", confirm: "" });
+const [loading, setLoading] = useState(false);
+const [isChanged, setIsChanged] = useState(false);
+
+const [passwords, setPasswords] = useState({
+  tempCode: "",
+  newPassword: "",
+  confirmPassword: "",
+});
+
+
+
+
+
 
   // --- HANDLERS ---
-  const handleChange = (e) => {
-    setPasswords({ ...passwords, [e.target.name]: e.target.value });
-  };
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (passwords.password === passwords.confirm && passwords.password !== "") {
-      setIsChanged(true);
-    } else {
-      alert("Passwords do not match!");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const { tempCode, newPassword, confirmPassword } = passwords;
+
+  if (!tempCode || !newPassword || !confirmPassword) {
+    alert("All fields are required");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const email = localStorage.getItem("resetEmail");
+    if (!email) {
+      alert("Session expired. Please try again.");
+      return;
     }
-  };
+
+    await resetPassword({
+      email,
+      tempCode,
+      newPassword,
+      confirmPassword,
+    });
+
+    setIsChanged(true);
+
+    setTimeout(() => {
+      router.push("/auth/signin");
+    }, 2000);
+  } catch (error) {
+    console.error(error);
+    alert(
+      error.response?.data?.message ||
+        "Unable to reset password. Please try again."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+  const handleChange = (e) => {
+  const { name, value } = e.target;
+  setPasswords((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
+
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (passwords.password === passwords.confirm && passwords.password !== "") {
+  //     setIsChanged(true);
+  //   } else {
+  //     alert("Passwords do not match!");
+  //   }
+  // };
 
   return (
     <Box
@@ -57,7 +128,8 @@ const ResetPassword = () => {
           flexDirection: { xs: "column", md: "row" }, // Side-by-side on desktop
           width: "100%",
           maxWidth: "950px",
-          minHeight: "600px",
+          height: "600px",
+          marginTop: "5%",
           //   borderRadius: "32px",
           overflow: "hidden",
           //   boxShadow: "0px 30px 90px rgba(27, 47, 116, 0.1)",
@@ -127,16 +199,16 @@ const ResetPassword = () => {
                     variant="body2"
                     sx={{ fontWeight: 600, mb: 1, color: "#444" }}
                   >
-                    Temporary Password
+                    Temporary Code
                   </Typography>
                   <TextField
                     fullWidth
                     required
-                    name="password"
+                    name="tempCode"
                     type={showPassword ? "text" : "password"}
-                    value={passwords.password}
+                    value={passwords.tempCode}
                     onChange={handleChange}
-                    placeholder="Enter temporary password"
+                    placeholder="Enter temporary code"
                     sx={{
                       mb: 3,
                       "& .MuiOutlinedInput-root": { borderRadius: "14px" },
@@ -168,9 +240,9 @@ const ResetPassword = () => {
                   <TextField
                     fullWidth
                     required
-                    name="password"
+                    name="newPassword"
                     type={showPassword ? "text" : "password"}
-                    value={passwords.password}
+                    value={passwords.newPassword}
                     onChange={handleChange}
                     placeholder="Enter new password"
                     sx={{
@@ -205,9 +277,9 @@ const ResetPassword = () => {
                   <TextField
                     fullWidth
                     required
-                    name="confirm"
+                    name="confirmPassword"
                     type={showPassword ? "text" : "password"}
-                    value={passwords.confirm}
+                    value={passwords.confirmPassword}
                     onChange={handleChange}
                     placeholder="Confirm your password"
                     sx={{

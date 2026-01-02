@@ -97,3 +97,16 @@ export const registerCompany = async (formData) => {
   }
 };
 
+export const sendEmailOtp = (email) => {
+  return axiosClient.post("/api/auth/send-code", {
+    email,
+  });
+};
+
+export const verifyEmailOtp = (email, code) => {
+  return axiosClient.post("/api/auth/verify-code", {
+    email,
+    code, // 6 digit OTP
+  });
+};
+

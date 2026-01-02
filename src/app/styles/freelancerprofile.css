@@ -2,7 +2,7 @@
   
   background: #fdece5; /* light peach */
   padding: 1px 10px;
-  height: 100vh;
+  height: 400px;
   overflow: hidden;
   top:0;
   width: 100%;
@@ -29,7 +29,7 @@
 /* Right decorative shape */
 .hero-right-img {
   position: absolute;
-  bottom: 0;
+  bottom: 185px;
   right: 0;
   width: 350px;
   pointer-events: none;
@@ -41,7 +41,7 @@
   position: relative; /* keeps content above shapes */
   max-width: 900px;
   left: 10%;
-  bottom: 35%;
+  bottom: 20%;
   text-align: start;
 
 }
@@ -64,8 +64,8 @@
 }
 
 .profile-img {
-  width: 60px;
-  height: 60px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
 }

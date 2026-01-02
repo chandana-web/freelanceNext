@@ -11,14 +11,12 @@ import "@/app/styles/freelancerprofile.css";
 import { useEffect, useRef, useState } from 'react';
 import Link from "next/link";
 
+import { getFreelancerProfile, addFreelancerReview, markCommentHelpful } from "../../../api/freelancerProfileApi";
 
-const ratingBreakdown = [
-  { label: "5 Star", count: 58, percent: 90 },
-  { label: "4 Star", count: 20, percent: 70 },
-  { label: "3 Star", count: 15, percent: 50 },
-  { label: "2 Star", count: 2, percent: 25 },
-  { label: "1 Star", count: 1, percent: 15 },
-];
+
+
+
+
 
 const reviews = [
   {
@@ -39,8 +37,159 @@ const MAX_RATING = 5;
 
 const FreelancerProfile = () => {
 
-    const averageRating = 4.96;
-  const totalReviews = 3014;
+    const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+   const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [form, setForm] = useState({
+    comment: "",
+    name: "",
+    email: "",
+    remember: false,
+  });
+
+useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+
+      const res = await getFreelancerProfile(
+        "694a448042c8657b2105e7a1"
+      );
+
+      console.log("API RESPONSE 👉", res.data.profile);
+
+      setProfile(res.data.profile);
+    } catch (err) {
+      console.error("API ERROR 👉", err);
+      setError(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProfile();
+}, []);
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!rating) {
+    alert("Please select a rating");
+    return;
+  }
+
+  // ✅ store values FIRST
+  const newReview = {
+    name: form.name,
+    email: form.email,
+    rating,
+    comment: form.comment,
+    helpfulCount: 0,
+    notHelpfulCount: 0,
+    createdAt: new Date().toISOString(),
+  };
+
+  try {
+    await addFreelancerReview(
+      "694a448042c8657b2105e7a1",
+      {
+        name: form.name,
+        email: form.email,
+        rating,
+        comment: form.comment,
+      }
+    );
+
+    alert("Review submitted successfully 🎉");
+
+    // ✅ optimistic UI update (NOW comment exists)
+    setProfile((prev) => ({
+      ...prev,
+      comments: [newReview, ...prev.comments],
+      ratings: {
+        ...prev.ratings,
+        total: prev.ratings.total + 1,
+      },
+    }));
+
+    // ✅ reset AFTER UI update
+    setForm({
+      comment: "",
+      name: "",
+      email: "",
+      remember: false,
+    });
+    setRating(0);
+    setHoverRating(0);
+
+  } catch (err) {
+    console.error("POST REVIEW ERROR 👉", err);
+    alert(err.response?.data?.message || "Failed to submit review");
+  }
+
+
+};
+
+// console.log("PROFILE PHOTO 👉", profile.profilePhoto);
+
+
+const handleCommentReaction = async (commentId, type) => {
+  try {
+    // optimistic update
+    setProfile((prev) => ({
+      ...prev,
+      comments: prev.comments.map((c) => {
+        if (c._id !== commentId) return c;
+
+        return {
+          ...c,
+          helpfulCount:
+            type === "helpful"
+              ? c.helpfulCount + 1
+              : c.helpfulCount,
+          notHelpfulCount:
+            type === "notHelpful"
+              ? c.notHelpfulCount + 1
+              : c.notHelpfulCount,
+        };
+      }),
+    }));
+
+    await markCommentHelpful(
+      profile.freelancerId._id,
+      commentId,
+      type
+    );
+  } catch (err) {
+    console.error("REACTION ERROR 👉", err);
+  }
+};
+
+
+
+
+if (loading) return <p className="loading">Loading profile...</p>;
+if (error) return <p className="error">{error}</p>;
+if (!profile) return null;
+
+
+
+    const averageRating = profile.ratings.average;
+const totalReviews = profile.ratings.total;
+
+const ratingBreakdown = Object.entries(profile.ratings.starCount)
+  .reverse()
+  .map(([star, count]) => ({
+    label: `${star} Star`,
+    count,
+    percent: totalReviews
+      ? Math.round((count / totalReviews) * 100)
+      : 0
+  }));
+
 
 
 
@@ -52,40 +201,40 @@ const FreelancerProfile = () => {
     "/assets/freprofilepro1.webp",
     "/assets/freprofilepro1.webp",
   ];
-  const trendingServices = [
-  {
-    id: 1,
-    image: "/assets/ts1.webp",
-    category: "Web & App Design",
-    title: "I will design modern websites in figma or...",
-    rating: 4.82,
-    reviews: 94,
-    seller: "Wanda Runo",
-    avatar: "/assets/avatar1.webp",
-    price: "$983",
-  },
-  {
-    id: 2,
-    image: "/assets/ts2.webp",
-    category: "Art & Illustration",
-    title: "I will create modern flat design illustr...",
-    rating: 4.82,
-    reviews: 94,
-    seller: "Ali Tufan",
-    avatar: "/assets/avatar2.webp",
-    price: "$983",
-  },
-  {
-    id: 3,
-    image: "/assets/ts3.webp",
-    category: "Design & Creative",
-    title: "I will build a fully responsive design i...",
-    rating: 4.82,
-    reviews: 94,
-    seller: "Wanda Runo",
-    avatar: "/assets/avatar1.webp",
-    price: "$983",
-  },]
+  const freelancerProjects = profile?.projects?.map((project) => ({
+  id: project._id,
+  image:
+    project.projectPhotos?.length > 0
+      ? project.projectPhotos[0]
+      : "/assets/ts-placeholder.webp", // fallback image
+
+  category: "Project",
+  title: project.projectName,
+  description: project.shortDescription,
+  rating: profile?.ratings?.average || 0,
+  reviews: profile?.ratings?.total || 0,
+  seller: `${profile.freelancerId?.firstName} ${profile.freelancerId?.lastName}`,
+  avatar: "/assets/avatar1.webp", // optional: static for now
+  price: `${profile.currency} ${project.startingPrice}`,
+  link: project.projectLink?.startsWith("http")
+  ? project.projectLink
+  : project.projectLink
+  ? `https://${project.projectLink}`
+  : null,
+}));
+
+
+const rawPath = profile.freelancerId?.selfiePhoto;
+
+const normalizedPath = rawPath
+  ? rawPath.replace(/\\/g, "/")
+  : "";
+
+const profileImage = normalizedPath
+  ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/${normalizedPath}?v=${Date.now()}`
+  : "/assets/avatar1.webp";
+
+
 
   // const handleScrollTo = (ref, id) => {
   //   setActiveTab(id);
@@ -116,14 +265,7 @@ const FreelancerProfile = () => {
 
   // }, [tabs]);
 
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [form, setForm] = useState({
-    comment: "",
-    name: "",
-    email: "",
-    remember: false,
-  });
+ 
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -133,14 +275,26 @@ const FreelancerProfile = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here you would send data to your API
-    console.log({ rating, ...form });
-    alert("Review submitted (demo only)");
-  };
+  const skills =
+  profile?.freelancerId?.skills ||
+  profile?.freelancerId?.skill ||
+  [];
+const normalizedSkills = Array.isArray(skills)
+  ? skills
+  : skills
+  ? skills.split(",").map((s) => s.trim())
+  : [];
 
-  
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+    // Here you would send data to your API
+  //   console.log({ rating, ...form });
+  //   alert("Review submitted (demo only)");
+  // };
+
+
+
 
   
   return (
@@ -150,21 +304,21 @@ const FreelancerProfile = () => {
         <Image src="/assets/frproheroright.png" className="hero-right-img" width={350} height={350} alt="" />
 
         <div className="freelancer-hero-content">
-          <h1 className="hero-title">I will design website UI UX in Adobe XD or Figma</h1>
+          <h1 className="hero-title">{profile.shortDescription}</h1>
 
           <div className="profile-row">
-            <Image src="/assets/freproheroava.webp" className="profile-img" width={50} height={50} alt="" />
+          <Image src={profileImage} className="profile-img" width={50} height={50} alt="" priority />
 
             <div className="info">
-              <h3>Leslie Alexander</h3>
-              <p className="role">UI/UX Designer</p>
+              <h3>{profile.freelancerId?.firstName} {profile.freelancerId?.lastName}</h3>
+              <p className="role">{profile.freelancerId?.skill}</p>
 
               <div className="meta">
                 <span>
-                  <Image src="/assets/freherostar.png" alt="" width={18} height={18}/> 4.82 (94 reviews)
+                  <Image src="/assets/freherostar.png" alt="" width={18} height={18}/> {profile.ratings?.average} ({profile.ratings?.total} reviews)
                 </span>
                 <span>
-                  <Image src="/assets/freheroloc.png" alt="" width={18} height={18} /> London, UK
+                  <Image src="/assets/freheroloc.png" alt="" width={18} height={18} /> {profile.city}, {profile.country}
                 </span>
                 <span>
                   <Image src="/assets/freherocal.png" alt="" width={18} height={18} /> Member since April 1, 2022
@@ -238,11 +392,8 @@ const FreelancerProfile = () => {
 
   <h3 className="about-title">Description</h3>
 
-  <p className="about-text">
-    It is a long established fact that a reader will be distracted by the readable content of a page 
-    when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal 
-    distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.
-  </p>
+  <p className="about-text">{profile.fullDescription}</p>
+
 
   <p className="about-text">
     Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a 
@@ -258,42 +409,24 @@ const FreelancerProfile = () => {
         <h3 className="section-heading">Education</h3>
 
   <div className="timeline">
-    <div className="timeline-item">
-      <div className="timeline-left">
-        <div className="timeline-marker">M</div>
-        <div className="timeline-line" />
-      </div>
-
-      <div className="timeline-content">
-        
-        <h4 className="timeline-title">Bachlors in Fine Arts</h4>
-        
-        <p className="timeline-subtitle">Modern College</p>
-        <span className="timeline-badge">2012 – 2014</span>
-        <p className="timeline-text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin a ipsum
-          tellus. Interdum et malesuada fames ac ante ipsum primis in faucibus.
-        </p>
-      </div>
+    {profile.education.map((edu, index) => (
+  <div className="timeline-item" key={index}>
+    <div className="timeline-left">
+      <div className="timeline-marker">🎓</div>
+      <div className="timeline-line" />
     </div>
 
-    <div className="timeline-item">
-      <div className="timeline-left">
-        <div className="timeline-marker">M</div>
-        <div className="timeline-line" />
-      </div>
-
-      <div className="timeline-content">
-        
-        <h4 className="timeline-title">Computer Science</h4>
-        <p className="timeline-subtitle">Harvatrd University</p>
-        <span className="timeline-badge">2008 – 2012</span>
-        <p className="timeline-text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin a ipsum
-          tellus. Interdum et malesuada fames ac ante ipsum primis in faucibus.
-        </p>
-      </div>
+    <div className="timeline-content">
+      <h4 className="timeline-title">{edu.course}</h4>
+      <p className="timeline-subtitle">{edu.collegeName}</p>
+      <span className="timeline-badge">
+        {edu.startYear} – {edu.endYear}
+      </span>
+      <p className="timeline-text">{edu.description}</p>
     </div>
+  </div>
+))}
+
   </div>
 
   <hr className="divider" />
@@ -303,41 +436,24 @@ const FreelancerProfile = () => {
         <h3 className="section-heading">Work & Experience</h3>
 
   <div className="timeline">
-    <div className="timeline-item">
-      <div className="timeline-left">
-        <div className="timeline-marker">M</div>
-        <div className="timeline-line" />
-      </div>
-
-      <div className="timeline-content">
-        
-        <h4 className="timeline-title">UX Designer</h4>
-        <p className="timeline-subtitle">Dropbox</p>
-        <span className="timeline-badge">2012 – 2014</span>
-        <p className="timeline-text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin a ipsum
-          tellus. Interdum et malesuada fames ac ante ipsum primis in faucibus.
-        </p>
-      </div>
+{profile.workExperience.map((job, index) => (
+  <div className="timeline-item" key={index}>
+    <div className="timeline-left">
+      <div className="timeline-marker">💼</div>
+      <div className="timeline-line" />
     </div>
 
-    <div className="timeline-item">
-      <div className="timeline-left">
-        <div className="timeline-marker">M</div>
-        <div className="timeline-line" />
-      </div>
-
-      <div className="timeline-content">
-        
-        <h4 className="timeline-title">Art Director</h4>
-        <p className="timeline-subtitle">amazon</p>
-        <span className="timeline-badge">2008 – 2012</span>
-        <p className="timeline-text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin a ipsum
-          tellus. Interdum et malesuada fames ac ante ipsum primis in faucibus.
-        </p>
-      </div>
+    <div className="timeline-content">
+      <h4 className="timeline-title">{job.designation}</h4>
+      <p className="timeline-subtitle">{job.companyName}</p>
+      <span className="timeline-badge">
+        {job.startYear} – {job.endYear}
+      </span>
+      <p className="timeline-text">{job.description}</p>
     </div>
+  </div>
+))}
+
   </div>
 
   <hr className="divider" />
@@ -350,7 +466,8 @@ const FreelancerProfile = () => {
       className="free-trending-wrapper"
 
     >
-      {trendingServices.map((item, i) => (
+      {freelancerProjects?.length > 0 &&
+      (freelancerProjects.map((item) => (
         <div className="free-trending-card" key={item.id}>
           <div className="free-trending-img-wrap">
             <Image src={item.image} alt={item.title} className="trending-img"  fill />
@@ -366,8 +483,8 @@ const FreelancerProfile = () => {
 
           <div className="free-trending-body">
             <p className="free-trending-category">{item.category}</p>
-            <Link href="/" className="free-trending-title-link">
-  {item.title}
+            <Link href={item.link || "#"} className="free-trending-title-link">
+  {item.description}
 </Link>
 
 
@@ -391,7 +508,7 @@ const FreelancerProfile = () => {
             </div>
           </div>
         </div>
-      ))}
+      )))}
     </div>
     </section>
 
@@ -431,26 +548,45 @@ const FreelancerProfile = () => {
 
       {/* Reviews list */}
       <div className="reviews-list">
-        {reviews.map((review, idx) => (
-          <article className="review-card" key={idx}>
-            <div className="review-header">
-              <div className="review-avatar">
-                <span>{review.initials}</span>
-              </div>
-              <div className="review-meta">
-                <div className="review-name">{review.name}</div>
-                <div className="review-date">{review.date}</div>
-              </div>
-            </div>
+      {profile.comments.map((review, idx) => (
+  <article className="review-card" key={idx}>
+    <div className="review-header">
+      <div className="review-avatar">
+        <span>{review.name[0]}</span>
+      </div>
+      <div className="review-meta">
+        <div className="review-name">{review.name}</div>
+        <div className="review-date">
+          {new Date(review.createdAt).toDateString()}
+        </div>
+      </div>
+    </div>
 
-            <p className="review-text">{review.text}</p>
+    <p className="review-text">{review.comment}</p>
 
-            <div className="review-actions">
-              <button className="review-action-btn">👍 Helpful</button>
-              <button className="review-action-btn">👎 Not helpful</button>
-            </div>
-          </article>
-        ))}
+    <div className="review-actions">
+      <button
+  className="review-action-btn"
+  onClick={() =>
+    handleCommentReaction(review._id, "helpful")
+  }
+>
+  👍 Helpful ({review.helpfulCount})
+</button>
+
+<button
+  className="review-action-btn"
+  onClick={() =>
+    handleCommentReaction(review._id, "notHelpful")
+  }
+>
+  👎 Not helpful ({review.notHelpfulCount})
+</button>
+
+    </div>
+  </article>
+))}
+
       </div>
 
       {/* See more */}
@@ -549,22 +685,22 @@ const FreelancerProfile = () => {
         </div>
 
         {/* Remember checkbox */}
-        <label className="review-checkbox-wrapper">
+        {/* <label className="review-checkbox-wrapper">
           <input
             type="checkbox"
             name="remember"
             checked={form.remember}
             onChange={handleChange}
-          />
-          <span>
+          /> */}
+          {/* <span>
             Save my name, email, and website in this browser for the next time I
             comment.
-          </span>
-        </label>
+          </span> */}
+        {/* </label> */}
 
         {/* Submit button */}
-        <button type="submit" className="review-submit-btn">
-          Send <span>↗</span>
+        <button type="submit" className="review-submit-btn" disabled={loading}>
+         {loading ? "Sending..." : <>Send <span>↗</span></>}
         </button>
       </form>
     </div>
@@ -573,9 +709,11 @@ const FreelancerProfile = () => {
 
    <aside className="profile-sidebar">
     <div className="pricing-box">
-    <h2 className="pricing-price">
-      $29<span>/per hour</span>
-    </h2>
+   <h2 className="pricing-price">
+  {profile?.currency} {profile?.hourlyRate}
+  <span>/per hour</span>
+</h2>
+
 
     <ul className="pricing-list">
       <li>
@@ -583,7 +721,10 @@ const FreelancerProfile = () => {
           <Image src="/assets/freheroloc.png" width={18} height={18} alt="" />
           <span>Location</span>
         </div>
-        <span className="pricing-value">London, UK</span>
+        <span className="pricing-value">
+  {profile?.city}, {profile?.country}
+</span>
+
       </li>
 
       <li>
@@ -607,7 +748,7 @@ const FreelancerProfile = () => {
           <Image src="/assets/freegender.png" width={18} height={18} alt="" />
           <span>Gender</span>
         </div>
-        <span className="pricing-value">Male</span>
+        <span className="pricing-value">{profile?.gender}</span>
       </li>
 
       <li>
@@ -633,15 +774,19 @@ const FreelancerProfile = () => {
   </div>
 
     <div className="skills-box">
-      <h3>My Skills</h3>
-      <div className="skills-tags">
-        <span>Figma</span>
-        <span>Sketch</span>
-        <span>HTML5</span>
-        <span>UI/UX</span>
-        <span>Prototyping</span>
-      </div>
-    </div>
+  <h3>My Skills</h3>
+
+  <div className="skills-tags">
+    {normalizedSkills.length > 0 ? (
+      normalizedSkills.map((skill, index) => (
+        <span key={index}>{skill}</span>
+      ))
+    ) : (
+      <span className="text-muted">No skills added</span>
+    )}
+  </div>
+</div>
+
   </aside>
   </div>
     </div>

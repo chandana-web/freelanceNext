@@ -1,72 +1,160 @@
 /* Page background */
-.auth-page {
-  background: #ffe9e4;
+.signin-auth-page {
+  background: linear-gradient( 135deg, #1b2f74  10%, #FFA6B7  100%);
   
   padding: 80px 20px;
   text-align: center;
-  margin-top: 40px;
+  /* margin-top: 40px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }
 
 /* Titles */
-.auth-title {
+.signin-auth-title {
   font-size: 2rem;
   font-weight: bold;
 }
 
-.auth-subtitle {
+.signin-auth-subtitle {
   margin-top: 5px;
   color: #555;
 }
 
 /* Card layout */
-.auth-card {
-  background: white;
-  max-width: 550px;
-  margin: 20px auto;
-  padding:40px;
+.signin-auth-card {
+  background: #fff;
+  max-width: 650px;
+  margin-left: 5px;
+  margin-right: 10px;
+  padding: 10px 30px;
   border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 6px 20px rgba(35, 34, 34, 0.13);
 }
+
+
+.sign-in-btn{
+  display: flex;
+  justify-content: end;
+  align-items: end;
+}
+
+/* From Uiverse.io by R1SH4BH81 */ 
+.cssbuttonsIoButton {
+  background: #1b2f74;
+  color: white;
+  font-family: inherit;
+  border: 1px solid white;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 2rem;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  height: 2.8em;
+  padding-right: 3.3em;
+  padding-left: 1rem;
+  cursor: pointer;
+
+  /* Smooth transition for background and text color */
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+.cssbuttonsIoButton .icon {
+  background: white;
+  margin-left: 1em;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.2em;
+  width: 2.2em;
+  border-radius: 2rem;
+  right: 0.3em;
+
+  /* Already includes transition for icon */
+  transition:
+    background-position 0.5s ease-out,
+    border 0.2s ease-out,
+    color 0.5s ease-out;
+  will-change: width, transform;
+}
+
+.cssbuttonsIoButton:hover {
+  background-color: white;
+  color: #000000;
+  border: 1px solid #000;
+}
+
+.cssbuttonsIoButton .icon svg {
+  width: 1.1em;
+  transition: transform 0.3s ease-out;
+  will-change: transform;
+  color: #000000;
+}
+
+.cssbuttonsIoButton:hover .icon svg {
+  transform: translateX(0.1em) rotate(-25deg);
+}
+
+.cssbuttonsIoButton:active .icon {
+  transform: scale(0.95);
+}
+.title {
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+
+
 
 /* Welcome text */
-.auth-welcome {
+.signin-auth-welcome {
   font-size: 1.2rem;
   margin-bottom: 6px;
-  text-align: start;
+ display: flex;
+ justify-content: center;
+ align-items: center;
 }
 
-.auth-switch {
+.signin-auth-switch {
   margin-bottom: 25px;
   font-size: 0.8rem;
   text-align: start;
 }
 
-.auth-switch a {
-  color: #00a46c;
+.signin-auth-switch a {
+  color: #1b2f74;
   font-weight: 600;
 }
 
 /* Inputs */
-.auth-card label {
+/* .signin-auth-card label {
   text-align: left;
   width: 100%;
   display: block;
   font-weight: 500;
   margin: 10px 0 5px;
-}
+} */
 
-.auth-card input[type="email"],
-.auth-card input[type="password"] {
+/* .signin-auth-card input[type="email"],
+.signin-auth-card input[type="password"] {
   width: 100%;
   padding: 12px;
-  border: 1px solid #e3e3e3;
+  border: 1px solid ;
   border-radius: 8px;
   font-size: 15px;
   margin-bottom: 10px;
-}
+} */
 
 /* Remember row */
-.auth-row {
+.signin-auth-row {
   display: flex;
   justify-content: space-between;
   
@@ -74,25 +162,48 @@
   font-size: 12px;
 }
 
-.checkbox-input{
+.signin-checkbox-input{
     margin-right: 8px;
 
 }
-.checkbox{
+.signin-checkbox{
     margin-bottom: 5px ;
 }
-.forgot {
+.signin-forgot {
   color: #888;
    white-space: nowrap;
    margin-top: 10px;
+   text-align: end;
+  
 }
 
-.forgot:hover{
+.social-box {
+  margin-top: 20px;
+  display: flex;
+   margin-bottom: 20px;
+   justify-content: center;
+   align-items: center;
+  gap: 10px;
+}
+
+.social-box button {
+  width: 150px;
+  border: 1px solid #ccc;
+  padding: 12px 3px;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  background: white;
+  cursor: pointer;
+}
+
+.signin-forgot:hover{
     color: #000;
 }
 
 /* Login button */
-.auth-btn {
+.signin-auth-btn {
   background: #36b26c;
   color: white;
   width: 100%;
@@ -105,21 +216,21 @@
   transition: 0.3s;
 }
 
-.auth-btn:hover {
+.signin-auth-btn:hover {
   background: #2d9e5c;
 }
 
 /* Divider */
-.divider {
-  margin: 25px 0;
+.signin-divider {
+  margin: 10px 0;
   text-align: center;
   font-size: 14px;
   color: #888;
   position: relative;
 }
 
-.divider::before,
-.divider::after {
+.signin-divider::before,
+.signin-divider::after {
   content: "";
   width: 40%;
   height: 1px;
@@ -128,18 +239,18 @@
   top: 50%;
 }
 
-.divider::before { left: 0; }
+.signin-divider::before { left: 0; }
 .divider::after { right: 0; }
 
 /* Social buttons */
-.social-group {
+.signin-social-group {
   display: flex;
   /* flex-wrap: wrap; */
   gap: 12px;
   justify-content: center;
 }
 
-.social-btn {
+.signin-social-btn {
     background: white;
     font-size: 13px;
   display: flex;
@@ -155,26 +266,26 @@
   transition: 0.3s;
 }
 
-.facebook { border-color: #3b5998; color: #3b5998; }
-.facebook:hover{
+.signin-facebook { border-color: #3b5998; color: #3b5998; }
+.signin-facebook:hover{
     color: white;
     background-color: #3b5998 ;
 }
-.google { border-color: #db4437; color: #db4437; }
-.google:hover{
+.signin-google { border-color: #db4437; color: #db4437; }
+.signin-google:hover{
     color: white;
     background-color: #db4437 ;
 }
-.apple { border-color: #000; color: #000; }
-.apple:hover{
+.signin-apple { border-color: #000; color: #000; }
+.signin-apple:hover{
     color: white;
     background-color: #000 ;
 }
 
-.social-btn:hover { opacity: 0.8; }
+.signin-social-btn:hover { opacity: 0.8; }
 
 @media (max-width: 600px) {
-    .social-btn {
+    .signin-social-btn {
     
     font-size: 8px;
   

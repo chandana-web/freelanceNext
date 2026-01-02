@@ -51,6 +51,8 @@ const attachments = [
 const MAX_RATING = 5;
 
 const projectProfile = () => {
+
+  
     const averageRating = 4.96;
       const totalReviews = 3014;
     
