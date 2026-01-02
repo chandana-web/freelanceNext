@@ -10,8 +10,9 @@ import Image from 'next/image';
 import "@/app/styles/freelancerprofile.css";
 import { useEffect, useRef, useState } from 'react';
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
-import { getFreelancerProfile, addFreelancerReview, markCommentHelpful } from "../../../api/freelancerProfileApi";
+import { getFreelancerProfile, addFreelancerReview, markCommentHelpful } from "../../../../api/freelancerProfileApi";
 
 
 
@@ -49,16 +50,17 @@ const FreelancerProfile = () => {
     remember: false,
   });
 
+  const { id } = useParams(); // 👈 dynamic freelancer ID
+
+
 useEffect(() => {
+  if (!id) return;
+
   const fetchProfile = async () => {
     try {
       setLoading(true);
 
-      const res = await getFreelancerProfile(
-        "694a448042c8657b2105e7a1"
-      );
-
-      console.log("API RESPONSE 👉", res.data.profile);
+      const res = await getFreelancerProfile(id);
 
       setProfile(res.data.profile);
     } catch (err) {
@@ -70,7 +72,8 @@ useEffect(() => {
   };
 
   fetchProfile();
-}, []);
+}, [id]);
+
 
 
 const handleSubmit = async (e) => {
@@ -94,7 +97,7 @@ const handleSubmit = async (e) => {
 
   try {
     await addFreelancerReview(
-      "694a448042c8657b2105e7a1",
+      id,
       {
         name: form.name,
         email: form.email,
@@ -201,30 +204,8 @@ const ratingBreakdown = Object.entries(profile.ratings.starCount)
     "/assets/freprofilepro1.webp",
     "/assets/freprofilepro1.webp",
   ];
-  const freelancerProjects = profile?.projects?.map((project) => ({
-  id: project._id,
-  image:
-    project.projectPhotos?.length > 0
-      ? project.projectPhotos[0]
-      : "/assets/ts-placeholder.webp", // fallback image
 
-  category: "Project",
-  title: project.projectName,
-  description: project.shortDescription,
-  rating: profile?.ratings?.average || 0,
-  reviews: profile?.ratings?.total || 0,
-  seller: `${profile.freelancerId?.firstName} ${profile.freelancerId?.lastName}`,
-  avatar: "/assets/avatar1.webp", // optional: static for now
-  price: `${profile.currency} ${project.startingPrice}`,
-  link: project.projectLink?.startsWith("http")
-  ? project.projectLink
-  : project.projectLink
-  ? `https://${project.projectLink}`
-  : null,
-}));
-
-
-const rawPath = profile.freelancerId?.selfiePhoto;
+  const rawPath = profile.freelancerId?.selfiePhoto;
 
 const normalizedPath = rawPath
   ? rawPath.replace(/\\/g, "/")
@@ -233,6 +214,41 @@ const normalizedPath = rawPath
 const profileImage = normalizedPath
   ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/${normalizedPath}?v=${Date.now()}`
   : "/assets/avatar1.webp";
+
+
+ const baseUrl =
+  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
+
+const freelancerProjects = profile?.projects?.map((project) => {
+  const rawPath = project.projectPhotos?.[0];
+  const normalizedPath = rawPath
+    ? rawPath.replace(/\\/g, "/")
+    : null;
+
+  return {
+    id: project._id,
+    image: normalizedPath
+      ? `${baseUrl}/${normalizedPath}`
+      : "/assets/ts-placeholder.webp",
+    category: "Project",
+    title: project.projectName,
+    description: project.shortDescription,
+    rating: profile?.ratings?.average || 0,
+    reviews: profile?.ratings?.total || 0,
+    seller: `${profile.freelancerId?.firstName} ${profile.freelancerId?.lastName}`,
+    avatar: profileImage,
+    price: `${profile.currency} ${project.startingPrice}`,
+    link: project.projectLink?.startsWith("http")
+      ? project.projectLink
+      : project.projectLink
+      ? `https://${project.projectLink}`
+      : null,
+  };
+});
+
+
+
+
 
 
 
@@ -395,11 +411,7 @@ const normalizedSkills = Array.isArray(skills)
   <p className="about-text">{profile.fullDescription}</p>
 
 
-  <p className="about-text">
-    Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a 
-    search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved 
-    over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-  </p>
+  
 
   <hr className="divider" />
 
@@ -420,7 +432,7 @@ const normalizedSkills = Array.isArray(skills)
       <h4 className="timeline-title">{edu.course}</h4>
       <p className="timeline-subtitle">{edu.collegeName}</p>
       <span className="timeline-badge">
-        {edu.startYear} – {edu.endYear}
+        {edu.startYear} – {edu.endYear ?? "Present"}
       </span>
       <p className="timeline-text">{edu.description}</p>
     </div>
@@ -447,7 +459,7 @@ const normalizedSkills = Array.isArray(skills)
       <h4 className="timeline-title">{job.designation}</h4>
       <p className="timeline-subtitle">{job.companyName}</p>
       <span className="timeline-badge">
-        {job.startYear} – {job.endYear}
+        {job.startYear} – {job.endYear ?? "Present"}
       </span>
       <p className="timeline-text">{job.description}</p>
     </div>
@@ -482,7 +494,7 @@ const normalizedSkills = Array.isArray(skills)
           </div>
 
           <div className="free-trending-body">
-            <p className="free-trending-category">{item.category}</p>
+            <p className="free-trending-category">{item.title}</p>
             <Link href={item.link || "#"} className="free-trending-title-link">
   {item.description}
 </Link>

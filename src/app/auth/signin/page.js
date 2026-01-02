@@ -54,6 +54,9 @@ const handleSubmit = async () => {
 
     // Save token
     localStorage.setItem("authToken", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    router.push("/dashboard");
 
     // Redirect
     // if (formData.role === "customer") {
@@ -63,13 +66,13 @@ const handleSubmit = async () => {
     // } else {
     //   router.push("/company/dashboard");
     // }
-    if (formData.role === "customer") {
-      router.push("/dashboard");
-    } else if (formData.role === "freelancer") {
-      router.push("/dashboard");
-    } else {
-      router.push("/dashboard");
-    }
+    // if (formData.role === "customer") {
+    //   router.push("/dashboard");
+    // } else if (formData.role === "freelancer") {
+    //   router.push("/dashboard");
+    // } else {
+    //   router.push("/dashboard");
+    // }
   } catch (error) {
     console.error(error);
 
@@ -85,25 +88,24 @@ const handleGoogleSignIn = async () => {
   try {
     const userData = await signInWithGoogle();
 
-    console.log("Google User:", userData);
-
     localStorage.setItem("authToken", userData.token);
+    localStorage.setItem("user", JSON.stringify(userData.user));
 
-    router.push("/customer/dashboard");
+    router.push("/dashboard");
   } catch {
     alert("Google sign-in failed");
   }
 };
 
+
 const handleAppleSignIn = async () => {
   try {
     const userData = await signInWithApple();
 
-    console.log("Apple User:", userData);
-
     localStorage.setItem("authToken", userData.token);
+    localStorage.setItem("user", JSON.stringify(userData.user));
 
-    router.push("/customer/dashboard");
+    router.push("/dashboard");
   } catch {
     alert("Apple sign-in failed");
   }

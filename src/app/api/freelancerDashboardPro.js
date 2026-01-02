@@ -1,5 +1,11 @@
 import axiosClient from "./axiosClient";
 
+export const getAllFreelancers = () => {
+  return axiosClient.get("/api/public/freelancers");
+};
+
+
+
 export const getFreelancerProfile = () => {
   return axiosClient.get("/api/dashboard/freelancer/me");
 };
@@ -7,6 +13,10 @@ export const getFreelancerProfile = () => {
 // UPDATE profile (later)
 export const updateFreelancerProfile = (payload) => {
   return axiosClient.put("/api/dashboard/freelancer/me", payload);
+};
+
+export const updateFreelancerAccount = (payload) => {
+  return axiosClient.put("/api/dashboard/freelancer/account", payload);
 };
 
 // ADD
@@ -92,10 +102,11 @@ export const addProject = (formData) => {
   );
 };
 
+
 // UPDATE project
-export const updateProject = (projectId, formData) => {
+export const updateProject = (id, formData) => {
   return axiosClient.put(
-    `/api/dashboard/freelancer/project/${projectId}`,
+    `/api/dashboard/freelancer/project/${id}`,
     formData,
     {
       headers: {

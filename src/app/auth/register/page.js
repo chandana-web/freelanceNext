@@ -12,7 +12,7 @@ import {
   reload, 
   updateEmail
 } from "firebase/auth";
-import { registerCustomer, registerFreelancer, getFreelancerCategories, registerCompany, sendEmailOtp, verifyEmailOtp } from "@/app/api/authRegisterApi";
+import { registerCustomer, registerFreelancer, getFreelancerCategories, registerCompany, sendEmailOtp, verifyEmailOtp, getFreelancerSubCategories } from "@/app/api/authRegisterApi";
 // import { registerCompany } from "@/app/api/registerCompany";
 
 import React from 'react'
@@ -93,6 +93,24 @@ const [addrProof2Progress, setAddrProof2Progress] = useState(0);
 
 const [verifiedEmail, setVerifiedEmail] = useState(null);
 const isCustomer = formData.role === "I am a Customer";
+
+useEffect(() => {
+  const loadCategories = async () => {
+    const result = await getFreelancerCategories();
+
+    console.log("CATEGORY API RESULT 👉", result);
+
+    if (result.success) {
+      console.log("RAW CATEGORIES 👉", result.data);
+      setCategories(result.data.filter(cat => cat.isActive));
+    } else {
+      alert(result.message);
+    }
+  };
+
+  loadCategories();
+}, []);
+
 
 
 
@@ -289,16 +307,8 @@ useEffect(() => {
 
 
 
-const handleCategoryChange = (e) => {
-  const categoryId = e.target.value;
-  setSelectedCategory(categoryId);
 
-  const category = categories.find(cat => cat._id === categoryId);
-  setSubCategories(category?.subCategories?.filter(sub => sub.isActive) || []);
 
-  // reset subcategory
-  setSelectedSubCategory("");
-};
 
 const [freelancer, setFreelancer] = useState({
   // bio: "",
@@ -824,6 +834,8 @@ const idLabel = getIdLabel(freelancer.idType1);
 const idLabel1 = getIdLabel(freelancer.idType2);
 
 
+
+
   // Category example map
   const categoryOptions = {
     "Software Development": {
@@ -873,6 +885,19 @@ const handleOtpBackspace = (e, index) => {
     }
   }
 };
+
+
+
+const handleCategoryChange = (e) => {
+  const categoryId = e.target.value;
+  setSelectedCategory(categoryId);
+
+  const category = categories.find(cat => cat._id === categoryId);
+  setSubCategories(category?.subCategories?.filter(sub => sub.isActive) || []);
+
+  setSelectedSubCategory("");
+};
+
 
 
   
@@ -2356,13 +2381,14 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       {/* <Typography fontSize={14} fontWeight={600} mb={0.5}>
         Category *
       </Typography> */}
-
+      <FormControl size="small" width={230} >
       <Select
-        width={230}
+        
         size="small"
         value={selectedCategory}
         onChange={handleCategoryChange}
         displayEmpty
+        
       >
         <MenuItem value="" >Select Category *</MenuItem>
         {categories.map((cat) => (
@@ -2371,6 +2397,7 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
           </MenuItem>
         ))}
       </Select>
+      </FormControl>
       {freelancerErrors.category && (
     <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
       {freelancerErrors.category}

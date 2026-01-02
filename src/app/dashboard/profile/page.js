@@ -31,7 +31,7 @@ import { useEffect, useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 
-import { getFreelancerProfile, updateFreelancerProfile, updateFreelancerSkills,addEducation,updateEducation, deleteEducation, addExperience, updateExperience, deleteExperience, addCertification, updateCertification, deleteCertification, addProject, updateProject, deleteProject } from "../../api/freelancerDashboardPro";
+import { getFreelancerProfile, updateFreelancerProfile, updateFreelancerSkills,addEducation,updateEducation, deleteEducation, addExperience, updateExperience, deleteExperience, addCertification, updateCertification, deleteCertification, addProject, updateProject, deleteProject, updateFreelancerAccount } from "../../api/freelancerDashboardPro";
 
 
 
@@ -139,6 +139,22 @@ const PROJECTS_MOCK = [
 
 
 export default function Profile() {
+  const [accountForm, setAccountForm] = useState({
+  firstName: "",
+  lastName: "",
+  phoneNumber: "",
+  category: "",
+  subCategory: "",
+});
+
+const [accountImageFile, setAccountImageFile] = useState(null);
+const [accountImagePreview, setAccountImagePreview] = useState("");
+const [savingAccount, setSavingAccount] = useState(false);
+
+
+ const [freelancerId, setFreelancerId] = useState(null);
+
+
   const [skillInput, setSkillInput] = useState("");
 const [skills, setSkills] = useState([]);
 
@@ -221,30 +237,94 @@ const [isExpPresent, setIsExpPresent] = useState(false);
 const [isEditingCert, setIsEditingCert] = useState(false);
 const [editingCertId, setEditingCertId] = useState(null);
 const [isCertPresent, setIsCertPresent] = useState(false);
+const [loadingProfile, setLoadingProfile] = useState(true);
+const [fullName, setFullName] = useState("");
+const [projectPhotoPreviews, setProjectPhotoPreviews] = useState([]);
+
+
 
 useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  if (!storedUser) return;
+
+  try {
+    const user = JSON.parse(storedUser);
+
+    // 🔥 FIX HERE
+    setFreelancerId(user?.id || null);
+  } catch (err) {
+    console.error("Failed to parse user", err);
+  }
+}, []);
+
+
+// useEffect(() => {
+//   if (typeof window === "undefined") return;
+
+//   const storedUser = localStorage.getItem("user");
+//   if (!storedUser) return;
+
+//   try {
+//     const user = JSON.parse(storedUser);
+//     if (user?.freelancerId) {
+//       setFreelancerId(user.freelancerId);
+//     }
+//   } catch (err) {
+//     console.error("Failed to parse user from localStorage", err);
+//   }
+// }, []);
+
+// useEffect(() => {
+//   const storedUser = localStorage.getItem("user");
+//   console.log("STORED USER RAW 👉", storedUser);
+
+//   if (!storedUser) return;
+
+//   const user = JSON.parse(storedUser);
+//   console.log("PARSED USER 👉", user);
+
+//   setFreelancerId(user?.freelancerId || null);
+// }, []);
+
+
+
+
+
+useEffect(() => {
+  if (!freelancerId) return;
+
   const fetchProfile = async () => {
     try {
-      const res = await getFreelancerProfile();
+      setLoadingProfile(true);
+
+      const res = await getFreelancerProfile(freelancerId);
       const data = res.data.profile;
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
 
-const rawPath = data.freelancerId.selfiePhoto;
+      const baseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
 
-const normalizedPath = rawPath
-  ? rawPath.replace(/\\/g, "/")
-  : "";
+      const rawPath = data.freelancerId?.selfiePhoto;
+      const normalizedPath = rawPath
+        ? rawPath.replace(/\\/g, "/")
+        : "";
 
-const profileImageUrl = normalizedPath
-  ? `${baseUrl}/${normalizedPath}`
-  : "";
+      const profileImageUrl = normalizedPath
+        ? `${baseUrl}/${normalizedPath}`
+        : "";
 
-console.log("FINAL AVATAR URL:", profileImageUrl);
+      setProfileImage(profileImageUrl);
+      setFullName(
+  `${data.freelancerId.firstName || ""} ${data.freelancerId.lastName || ""}`.trim()
+);
+            // ✅ ADD THIS BLOCK
+      setAccountForm({
+        firstName: data.freelancerId.firstName || "",
+        lastName: data.freelancerId.lastName || "",
+        phoneNumber: data.freelancerId.phoneNumber || "",
+        category: data.freelancerId.category || "",
+        subCategory: data.freelancerId.subCategory || "",
+      });
 
-setProfileImage(profileImageUrl);
-
-
-        
 
       setProfile({
         username: `${data.freelancerId.firstName} ${data.freelancerId.lastName}`,
@@ -269,19 +349,119 @@ setProfileImage(profileImageUrl);
           : []
       );
 
-      setProfileImage(profileImageUrl);
-
       setEducationList(data.education || []);
       setExperienceList(data.workExperience || []);
       setCertificationList(data.certifications || []);
       setProjectList(data.projects || []);
     } catch (err) {
       console.error("Error fetching profile", err);
+    } finally {
+      setLoadingProfile(false);
     }
   };
 
   fetchProfile();
-}, []);
+}, [freelancerId]);
+
+const handleAccountChange = (e) => {
+  setAccountForm({
+    ...accountForm,
+    [e.target.name]: e.target.value,
+  });
+};
+const handleAccountImageSelect = (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setAccountImageFile(file);
+  setAccountImagePreview(URL.createObjectURL(file));
+};
+
+
+
+
+// useEffect(() => {
+//   console.log("FREELANCER ID 👉", freelancerId);
+
+//   if (!freelancerId) return;
+
+//   getFreelancerProfile(freelancerId)
+//     .then((res) => {
+//       console.log("PROFILE RESPONSE 👉", res.data);
+//     })
+//     .catch((err) => {
+//       console.error("PROFILE API ERROR 👉", err);
+//     });
+// }, [freelancerId]);
+
+const handleSaveAll = async () => {
+  try {
+    setLoadingProfile(true);
+
+    /* ================= ACCOUNT PAYLOAD ================= */
+    const [firstName,...rest]= fullName.trim().split(" ");
+    const lastName = rest.join(" ");
+    const accountFormData = new FormData();
+
+    accountFormData.append("firstName", firstName || "");
+    accountFormData.append("lastName", lastName || "");
+    accountFormData.append("phoneNumber", accountForm.phoneNumber);
+    accountFormData.append("category", accountForm.category);
+    accountFormData.append("subCategory", accountForm.subCategory);
+
+    if (accountImageFile) {
+      accountFormData.append("selfiePhoto", accountImageFile);
+    }
+
+    /* ================= PROFILE PAYLOAD ================= */
+    const profilePayload = {
+      shortDescription: profile.tagline,
+      fullDescription: profile.description,
+      hourlyRate: Number(profile.hourlyRate),
+      currency: profile.currency,
+      gender: profile.gender,
+      country: profile.country,
+      city: profile.city,
+      language: profile.language,
+      languageLevel: profile.languageLevel,
+    };
+
+    /* ================= API CALLS ================= */
+    const promises = [];
+
+    // Account API (name, phone, category, photo)
+    promises.push(updateFreelancerAccount(accountFormData));
+
+    // Profile API (professional details)
+    promises.push(updateFreelancerProfile(profilePayload));
+
+    await Promise.all(promises);
+
+    alert("Profile updated successfully ✅");
+
+    // Optional refresh
+    const res = await getFreelancerProfile(freelancerId);
+    const data = res.data.profile;
+
+    setProfile((prev) => ({
+      ...prev,
+      tagline: data.shortDescription || "",
+      description: data.fullDescription || "",
+      hourlyRate: data.hourlyRate || "",
+      currency: data.currency || "",
+      gender: data.gender || "",
+      country: data.country || "",
+      city: data.city || "",
+    }));
+  } catch (err) {
+    console.error("Save failed", err);
+    alert("Failed to save changes ❌");
+  } finally {
+    setLoadingProfile(false);
+  }
+};
+
+
 
 
 const handleSaveProfile = async () => {
@@ -322,7 +502,13 @@ const handleSaveEducation = async () => {
       await updateEducation(editingEduId, educationForm);
     } else {
       await addEducation(educationForm);
+      
     }
+    const refreshEducation = async () => {
+  if (!freelancerId) return;
+  const res = await getFreelancerProfile(freelancerId);
+  setEducationList(res.data.profile.education || []);
+};
 
     await refreshEducation(); // 🔥 THIS fixes undefined
 
@@ -371,12 +557,42 @@ const handleProjectChange = (e) => {
 
 const handleProjectPhotos = (e) => {
   const files = Array.from(e.target.files);
+  if (!files.length) return;
 
-  setProjectForm({
-    ...projectForm,
-    projectPhotos: files, // store File[]
-  });
+  setProjectForm((prev) => ({
+    ...prev,
+    projectPhotos: [...prev.projectPhotos, ...files],
+  }));
+
+  const previews = files.map((file) => URL.createObjectURL(file));
+  setProjectPhotoPreviews((prev) => [...prev, ...previews]);
 };
+
+const handleRemoveProjectPhoto = (index) => {
+  setProjectForm((prev) => ({
+    ...prev,
+    projectPhotos: prev.projectPhotos.filter((_, i) => i !== index),
+  }));
+
+  setProjectPhotoPreviews((prev) =>
+    prev.filter((_, i) => i !== index)
+  );
+};
+const openAddProjectModal = () => {
+  setProjectForm({
+    projectName: "",
+    projectPhotos: [],
+    shortDescription: "",
+    projectLink: "",
+    startingPrice: "",
+  });
+
+  setProjectPhotoPreviews([]);
+  setIsEditingProject(false);
+  setOpenProjectModal(true);
+};
+
+
 
 const buildProjectFormData = () => {
   const formData = new FormData();
@@ -384,14 +600,19 @@ const buildProjectFormData = () => {
   formData.append("projectName", projectForm.projectName);
   formData.append("shortDescription", projectForm.shortDescription);
   formData.append("projectLink", projectForm.projectLink);
-  formData.append("startingPrice", projectForm.startingPrice);
+  formData.append(
+    "startingPrice",
+    Number(projectForm.startingPrice || 0)
+  );
 
+  // ✅ DO NOT use []
   projectForm.projectPhotos.forEach((file) => {
-    formData.append("projectPhotos", file); // backend should expect array
+    formData.append("projectPhotos", file);
   });
 
   return formData;
 };
+
 
 
 const handleSaveProject = async () => {
@@ -405,7 +626,7 @@ const handleSaveProject = async () => {
     }
 
     // 🔥 refresh from backend
-    const res = await getFreelancerProfile();
+    const res = await getFreelancerProfile(freelancerId);
     setProjectList(res.data.profile.projects || []);
 
     setProjectForm({
@@ -453,7 +674,7 @@ const handleSaveCertification = async () => {
     }
 
     // 🔥 refresh from backend (safe)
-    const res = await getFreelancerProfile();
+    const res = await getFreelancerProfile(freelancerId);
     setCertificationList(res.data.profile.certifications || []);
 
     setCertificationForm({
@@ -510,7 +731,7 @@ const handleSaveExperience = async () => {
     }
 
     // 🔥 Always refresh from server
-    const res = await getFreelancerProfile();
+    const res = await getFreelancerProfile(freelancerId);
     setExperienceList(res.data.profile.workExperience || []);
 
     setExperienceForm({
@@ -675,7 +896,7 @@ const handleUploadProfileImage = async () => {
   {/* Avatar with delete icon */}
   <Box position="relative">
     <Avatar
-  src={profileImage}
+  src={accountImagePreview || profileImage}
   alt={profile.username}
   sx={{ width: 80, height: 80 }}
 >
@@ -718,15 +939,7 @@ const handleUploadProfileImage = async () => {
     hidden
     type="file"
     accept="image/*"
-    onChange={(e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      setProfileImageFile(file);
-
-      // instant preview (optional but recommended)
-      setProfileImage(URL.createObjectURL(file));
-    }}
+    onChange={handleAccountImageSelect}
   />
 </Button>
 
@@ -742,13 +955,14 @@ const handleUploadProfileImage = async () => {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }} >
             <TextField
-              label="Username"
-              name="username"
-              fullWidth
-              size="small"
-              value={profile.username}
-              onChange={handleChange}
-            />
+  label="Username"
+  fullWidth
+  size="small"
+  value={fullName}
+  onChange={(e) => setFullName(e.target.value)}
+/>
+
+
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
@@ -758,19 +972,21 @@ const handleUploadProfileImage = async () => {
               fullWidth
               size="small"
               value={profile.email}
-              onChange={handleChange}
+              onChange={handleAccountChange}
+              disabled
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
-              label="Phone Number"
-              name="phone"
-              fullWidth
-              size="small"
-              value={profile.phone}
-              onChange={handleChange}
-            />
+  label="Phone Number"
+  name="phoneNumber"
+  fullWidth
+  size="small"
+  value={accountForm.phoneNumber}
+  onChange={handleAccountChange}
+/>
+
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
@@ -849,12 +1065,12 @@ const handleUploadProfileImage = async () => {
             </FormControl>
           </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
+          {/* <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth size="small">
               <Select
                 name="specialization"
                 value={profile.specialization}
-                onChange={handleChange}
+                onChange={handleAccountChange}
                 displayEmpty
               >
                 <MenuItem value="">Specialization</MenuItem>
@@ -870,7 +1086,7 @@ const handleUploadProfileImage = async () => {
               <Select
                 name="type"
                 value={profile.type}
-                onChange={handleChange}
+                onChange={handleAccountChange}
                 displayEmpty
               >
                 <MenuItem value="">Type</MenuItem>
@@ -878,7 +1094,7 @@ const handleUploadProfileImage = async () => {
                 <MenuItem value="agency">Agency</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
+          </Grid> */}
 
           <Grid size={{ xs: 12, md: 6 }}>
   <TextField
@@ -965,7 +1181,7 @@ const handleUploadProfileImage = async () => {
           <Grid item xs={12}>
             <Button   variant="contained"
   color="success"
-  onClick={handleSaveProfile}>
+  onClick={handleSaveAll}>
               Save
             </Button>
           </Grid>
@@ -1992,6 +2208,51 @@ const handleUploadProfileImage = async () => {
           onChange={handleProjectPhotos}
         />
       </Button>
+      {/* Uploaded photo previews */}
+{projectPhotoPreviews.length > 0 && (
+  <Box display="flex" gap={1} flexWrap="wrap">
+    {projectPhotoPreviews.map((src, index) => (
+      <Box
+        key={index}
+        sx={{
+          position: "relative",
+          width: 90,
+          height: 70,
+          borderRadius: 1,
+          border: "1px solid #ddd",
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          component="img"
+          src={src}
+          alt="preview"
+          sx={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
+
+        <IconButton
+          size="small"
+          onClick={() => handleRemoveProjectPhoto(index)}
+          sx={{
+            position: "absolute",
+            top: -8,
+            right: -8,
+            bgcolor: "#fff",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+            "&:hover": { bgcolor: "#ffecec" },
+          }}
+        >
+          <DeleteIcon fontSize="small" />
+        </IconButton>
+      </Box>
+    ))}
+  </Box>
+)}
+
 
       <TextField
         label="Short Description"

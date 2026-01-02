@@ -69,6 +69,21 @@ export const getFreelancerCategories = async () => {
   }
 };
 
+export const getFreelancerSubCategories = async () => {
+  try {
+    const res = await axiosClient.get("/api/freelancer/subcategories");
+    return {
+      success: true,
+      data: res.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Failed to load categories",
+    };
+  }
+};
+
 export const registerCompany = async (formData) => {
   try {
     const res = await axiosClient.post(
