@@ -8,6 +8,7 @@ import {
   Box,
 } from "@mui/material";
 import { getAllFreelancers } from "../api/freelancerDashboardPro";
+import { getFreelancerProfile } from "../api/freelancerDashboardPro";
 
 
 import { useEffect, useState } from "react";
@@ -27,8 +28,9 @@ export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
-  const [userStatus, setUserStatus] = useState(null);
+  const [userStatus, setUserStatus] = useState("loading");
   const [checkingStatus, setCheckingStatus] = useState(true);
+  
 
   /* ---------------- AUTH CHECK ---------------- */
   useEffect(() => {
@@ -41,47 +43,29 @@ export default function DashboardLayout({ children }) {
     }
   }, [router]);
 
-  /* ---------------- STATUS CHECK ---------------- */
+/* ---------------- STATUS CHECK ---------------- */
+/* ---------------- STATUS CHECK ---------------- */
 useEffect(() => {
   const fetchStatus = async () => {
     try {
-      const storedUser = localStorage.getItem("user");
-      if (!storedUser) return;
+      const res = await getFreelancerProfile();
+      
+      console.log("STATUS SOURCE 👉", res.data);
 
-      const user = JSON.parse(storedUser);
-      console.log("LOGGED IN USER 👉", user);
+      const status =
+  res.data?.profile?.status?.trim().toLowerCase() ||  res.data?.profile?.freelancerId?.status?.trim().toLowerCase() || "inactive";
 
-      const res = await getAllFreelancers();
+        
 
-      console.log("RAW API RESPONSE 👉", res.data);
-
-      const freelancers = Array.isArray(res.data?.profiles)
-        ? res.data.profiles
-        : [];
-
-      console.log("FINAL FREELANCERS ARRAY 👉", freelancers);
-
-      const myProfile = freelancers.find(
-  (f) => f.freelancerId?._id === user.id
+const storedUser = JSON.parse(localStorage.getItem("user"));
+localStorage.setItem(
+  "user",
+  JSON.stringify({ ...storedUser, status })
 );
 
-if (!myProfile) {
-  console.error("Freelancer profile not found for user", user.id);
-  setUserStatus("inactive");
-  return;
-}
-
-const normalizedStatus = String(
-  myProfile.freelancerId?.status
-)
-  .trim()
-  .toLowerCase();
-
-console.log("FINAL STATUS 👉", normalizedStatus);
-setUserStatus(normalizedStatus);
-
+      setUserStatus(status);
     } catch (err) {
-      console.error("Failed to fetch freelancer status", err);
+      console.error("Status check failed", err);
       setUserStatus("inactive");
     } finally {
       setCheckingStatus(false);
@@ -97,6 +81,12 @@ setUserStatus(normalizedStatus);
 
 
 
+
+
+
+
+
+
   /* ---------------- LOADING STATE ---------------- */
   if (checkingAuth || checkingStatus) {
     return (
@@ -107,7 +97,8 @@ setUserStatus(normalizedStatus);
   }
 
   const isBlocked =
-    userStatus !== "approved";
+  !checkingStatus && userStatus && userStatus !== "approved";
+
     
 
   return (
@@ -133,7 +124,7 @@ setUserStatus(normalizedStatus);
       {/* 🔒 STATUS BLOCKING OVERLAY */}
       {/* 🔒 STATUS BLOCKING MODAL (MUI) */}
 <Dialog
-  open={userStatus !== "approved"}
+  open={isBlocked}
   disableEscapeKeyDown
   fullWidth
   maxWidth="sm"

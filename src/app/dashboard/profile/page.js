@@ -30,6 +30,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import { useEffect, useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+// import { normalizeFreelancer } from "@/app/utils/normalizeFreelancer";
 
 import { getFreelancerProfile, updateFreelancerProfile, updateFreelancerSkills,addEducation,updateEducation, deleteEducation, addExperience, updateExperience, deleteExperience, addCertification, updateCertification, deleteCertification, addProject, updateProject, deleteProject, updateFreelancerAccount } from "../../api/freelancerDashboardPro";
 
@@ -297,13 +298,13 @@ useEffect(() => {
     try {
       setLoadingProfile(true);
 
-      const res = await getFreelancerProfile(freelancerId);
+      const res = await getFreelancerProfile( freelancerId);
       const data = res.data.profile;
 
       const baseUrl =
         process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
 
-      const rawPath = data.freelancerId?.selfiePhoto;
+      const rawPath = data.selfiePhoto;
       const normalizedPath = rawPath
         ? rawPath.replace(/\\/g, "/")
         : "";
@@ -313,9 +314,23 @@ useEffect(() => {
         : "";
 
       setProfileImage(profileImageUrl);
-      setFullName(
-  `${data.freelancerId.firstName || ""} ${data.freelancerId.lastName || ""}`.trim()
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+
+
+setFullName(
+  `${storedUser.firstName || ""} ${storedUser.lastName || ""}`.trim()
 );
+
+// setProfile((prev) => ({
+//   ...prev,
+//   username: `${storedUser.firstName || ""} ${storedUser.lastName || ""}`,
+//   email: storedUser.email || "",
+//   phone: storedUser.phoneNumber || "",
+// }));
+
+//       setFullName(
+//   `${data.freelancerId.firstName || ""} ${data.freelancerId.lastName || ""}`.trim()
+// );
             // ✅ ADD THIS BLOCK
       setAccountForm({
         firstName: data.freelancerId.firstName || "",
@@ -326,10 +341,11 @@ useEffect(() => {
       });
 
 
-      setProfile({
-        username: `${data.freelancerId.firstName} ${data.freelancerId.lastName}`,
-        email: data.freelancerId.email,
-        phone: data.freelancerId.phoneNumber,
+      setProfile((prev)=>({
+        ...prev,
+  username: `${storedUser.firstName || ""} ${storedUser.lastName || ""}`,
+  email: storedUser.email || "",
+  phone: storedUser.phoneNumber || "",
         tagline: data.shortDescription || "",
         hourlyRate: data.hourlyRate || "",
         currency: data.currency || "",
@@ -341,11 +357,11 @@ useEffect(() => {
         language: "",
         languageLevel: "",
         description: data.fullDescription || "",
-      });
+      }));
 
       setSkills(
-        data.freelancerId.skill
-          ? data.freelancerId.skill.split(",").map((s) => s.trim())
+        data.skill
+          ? data.skill.split(",").map((s) => s.trim())
           : []
       );
 

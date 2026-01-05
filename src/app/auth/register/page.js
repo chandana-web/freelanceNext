@@ -15,6 +15,9 @@ import {
 import { registerCustomer, registerFreelancer, getFreelancerCategories, registerCompany, sendEmailOtp, verifyEmailOtp, getFreelancerSubCategories } from "@/app/api/authRegisterApi";
 // import { registerCompany } from "@/app/api/registerCompany";
 
+import { useRouter } from "next/navigation";
+
+
 import React from 'react'
 import {
   Box,
@@ -31,6 +34,7 @@ import {
   FormControlLabel,
   Modal,
   CircularProgress,
+  Autocomplete
 } from "@mui/material";
 // import Image from "next/image";
 
@@ -49,6 +53,7 @@ const countryCodes = [
 
 const Register = () => {
 
+const router = useRouter();
 
     const [formData, setFormData] = useState({
     firstName: "",
@@ -68,6 +73,8 @@ const Register = () => {
 
   const [errors, setErrors] = useState({});
   const [otpPopup, setOtpPopup] = useState(false);
+  const [allSubCategories, setAllSubCategories] = useState([]);
+
 
 const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 const [otpLoading, setOtpLoading] = useState(false);
@@ -98,11 +105,8 @@ useEffect(() => {
   const loadCategories = async () => {
     const result = await getFreelancerCategories();
 
-    console.log("CATEGORY API RESULT 👉", result);
-
     if (result.success) {
-      console.log("RAW CATEGORIES 👉", result.data);
-      setCategories(result.data.filter(cat => cat.isActive));
+      setCategories(result.data.filter(cat => cat.status===true));
     } else {
       alert(result.message);
     }
@@ -110,6 +114,25 @@ useEffect(() => {
 
   loadCategories();
 }, []);
+
+useEffect(() => {
+  const loadAllSubCategories = async () => {
+    try {
+      const res = await getFreelancerSubCategories(); // your existing API
+
+      console.log("ALL SUBCATEGORIES 👉", res);
+
+      // if API returns array directly
+      setAllSubCategories(res.data || []);
+    } catch (err) {
+      console.error("Failed to load subcategories", err);
+    }
+  };
+
+  loadAllSubCategories();
+}, []);
+
+
 
 
 
@@ -240,8 +263,10 @@ fd.append("aadhaarOrPassportType", freelancer.idType2);    // "AADHAAR" | "PASSP
   // fd.append("aadhaarOrPassportBack", freelancer.aadharBack);
 
   fd.append("selfiePhoto", freelancer.selfie);
-  fd.append("categoryId", selectedCategory);
-fd.append("subCategoryId", selectedSubCategory);
+fd.append("category", selectedCategory);
+fd.append("subcategory", selectedSubCategory);
+
+
 
 
   // Multiple experience documents
@@ -279,19 +304,7 @@ fd.append("subCategoryId", selectedSubCategory);
   }
 };
 
-useEffect(() => {
-  const loadCategories = async () => {
-    const result = await getFreelancerCategories();
 
-    if (result.success) {
-      setCategories(result.data.filter(cat => cat.isActive));
-    } else {
-      alert(result.message);
-    }
-  };
-
-  loadCategories();
-}, []);
 
 useEffect(() => {
   if (
@@ -405,6 +418,21 @@ const getIdLabel = (type) => {
   }
 };
 
+const MENU_PROPS = {
+  PaperProps: {
+    sx: {
+      maxHeight: 320,        // overall menu height
+    },
+  },
+  MenuListProps: {
+    sx: {
+      maxHeight: 320,        // 👈 THIS ENABLES SCROLL
+      overflowY: "auto",
+    },
+  },
+};
+
+
 
 const handleProviderAuth = async (providerData) => {
   try {
@@ -457,6 +485,7 @@ const handleFreelancerSubmit = async () => {
   }
 
   alert("Freelancer registered successfully!");
+  router.push("/auth/signin");
 };
 
 
@@ -888,15 +917,26 @@ const handleOtpBackspace = (e, index) => {
 
 
 
-const handleCategoryChange = (e) => {
-  const categoryId = e.target.value;
-  setSelectedCategory(categoryId);
+const handleCategorySelect = (category) => {
+  if (!category?._id) return;
 
-  const category = categories.find(cat => cat._id === categoryId);
-  setSubCategories(category?.subCategories?.filter(sub => sub.isActive) || []);
+  setSelectedSubCategory(null);
 
-  setSelectedSubCategory("");
+  const filtered = allSubCategories.filter(
+    (sub) =>
+      sub?.categoryId?._id === category._id &&
+      sub?.status === true
+  );
+
+  setSubCategories(filtered);
 };
+
+
+
+
+
+
+
 
 
 
@@ -2381,23 +2421,55 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
       {/* <Typography fontSize={14} fontWeight={600} mb={0.5}>
         Category *
       </Typography> */}
-      <FormControl size="small" width={230} >
-      <Select
-        
-        size="small"
-        value={selectedCategory}
-        onChange={handleCategoryChange}
-        displayEmpty
-        
-      >
-        <MenuItem value="" >Select Category *</MenuItem>
-        {categories.map((cat) => (
-          <MenuItem key={cat._id} value={cat._id}>
-            {cat.name}
-          </MenuItem>
-        ))}
-      </Select>
-      </FormControl>
+<Autocomplete
+disablePortal
+  fullWidth
+  options={categories}
+  getOptionLabel={(option) => option.name || ""}
+  value={categories.find(c => c._id === selectedCategory) || null}
+  onChange={(e, value) => {
+    // 🔑 STORE ONLY ID
+    setSelectedCategory(value?._id || null);
+
+    // reset dependent fields
+    setSelectedSubCategory(null);
+    setSubCategories([]);
+
+    if (value?._id) {
+      handleCategorySelect(value); // filtering / API
+    }
+  }}
+  ListboxProps={{
+    style: {
+      maxHeight: 300,
+      overflowY: "auto",
+    },
+  }}
+  sx={{
+  "& .MuiAutocomplete-listbox": {
+    maxHeight: 300,
+    overflowY: "auto",
+  },
+}}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Select Category *"
+      size="small"
+      error={!!freelancerErrors.category}
+      sx={{
+        "& .MuiInputBase-root": {
+          height: 40,
+          borderRadius: "8px",
+          width: 230,
+        },
+      }}
+    />
+  )}
+/>
+
+
+
       {freelancerErrors.category && (
     <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>
       {freelancerErrors.category}
@@ -2411,24 +2483,45 @@ boxShadow: "2px 10px 30px rgba(255, 255, 255, 0.27)",
         Sub Category *
       </Typography> */}
 
-      <Select
-        width={230}
-        size="small"
-        value={selectedSubCategory}
-        onChange={(e) => setSelectedSubCategory(e.target.value)}
-        displayEmpty
-        disabled={!selectedCategory}
-        sx={{
-          backgroundColor: !selectedCategory ? "#f1f1f1" : "#fff",
-        }}
-      >
-        <MenuItem value="">Select Sub Category *</MenuItem>
-        {subCategories.map((sub) => (
-          <MenuItem key={sub._id} value={sub._id}>
-            {sub.name}
-          </MenuItem>
-        ))}
-      </Select>
+<Autocomplete
+  options={subCategories}
+  getOptionLabel={(option) => option?.name || ""}
+  isOptionEqualToValue={(option, value) =>
+    option._id === value._id
+  }
+  value={
+    subCategories.find(s => s._id === selectedSubCategory) || null
+  }
+  onChange={(e, value) => {
+    // 🔑 STORE ONLY ID
+    setSelectedSubCategory(value?._id || null);
+  }}
+  disabled={!selectedCategory}
+  noOptionsText={
+    selectedCategory
+      ? "No subcategories found"
+      : "Select category first"
+  }
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Select Sub Category *"
+      size="small"
+      sx={{
+        "& .MuiInputBase-root": {
+          height: 40,
+          borderRadius: "8px",
+          width: 230,
+        },
+      }}
+    />
+  )}
+/>
+
+
+
+
+
 
       {freelancerErrors.subCategory && (
     <Box sx={{ color: "#d32f2f", fontSize: "12px", mt: "4px" }}>

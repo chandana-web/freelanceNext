@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-import { getFreelancerProfile, addFreelancerReview, markCommentHelpful } from "../../../../api/freelancerProfileApi";
+import { getPublicFreelancerProfile, addFreelancerReview, markCommentHelpful } from "../../../../api/freelancerProfileApi";
 
 
 
@@ -60,7 +60,7 @@ useEffect(() => {
     try {
       setLoading(true);
 
-      const res = await getFreelancerProfile(id);
+      const res = await getPublicFreelancerProfile(id);
 
       setProfile(res.data.profile);
     } catch (err) {

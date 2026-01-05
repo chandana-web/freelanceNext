@@ -1,7 +1,9 @@
 import axiosClient from "./axiosClient";
 
-export const getAllFreelancers = () => {
-  return axiosClient.get("/api/public/freelancers");
+export const getAllFreelancers = ({page=1, limit=8}) => {
+  return axiosClient.get("/api/public/freelancers", {
+    params: { page, limit }
+  });
 };
 
 

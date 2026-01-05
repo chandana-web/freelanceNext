@@ -8,506 +8,55 @@ import Link from "next/link";
 import "@/app/styles/services.css";
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { getAllFreelancers } from '@/app/api/freelancerDashboardPro';
 
 
 const Services = () => {
 
-  const websiteGigsData = [
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Prince Mahmud",
-      avatar: "/assets/ava1.webp",
-    },
-    title: "I will build a responsive wordpress website with custom theme",
-    rating: 5.0,
-    reviews: 328,
-    price: 7493,
-    level: "Level 2 ★★",
-  },
-   {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Nishant UI",
-      avatar: "/assets/ava2.webp",
-    },
-    title: "I will build landing page using react, tailwind and framer motion",
-    rating: 4.9,
-    reviews: 132,
-    price: 6220,
-    level: "Level 1 ★",
-  },
+  const [freelancers, setFreelancers] = useState([]);
+const [loading, setLoading] = useState(true);
+const [currentPage, setCurrentPage] = useState(1);
 
-  {
-    images: [
-      "/assets/serviceCard3.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "PixelCraft Studio",
-      avatar: "/assets/ava3.webp",
-    },
-    title: "I will create fast SEO optimized portfolio or business website",
-    rating: 4.8,
-    reviews: 441,
-    price: 5299,
-    level: "Level 1 ★",
-  },
+const [totalPages, setTotalPages] = useState(1);
+const limit = 8;
 
-  {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "Tohidul I.",
-      avatar: "/assets/ava4.webp",
-    },
-    title: "I will redesign a premium wordpress website with elementor pro",
-    rating: 5.0,
-    reviews: 40,
-    price: 7961,
-    level: "Level 2 ★★",
-  },
 
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-    ],
-    seller: {
-      name: "Atikur Rahman",
-      avatar: "/assets/ava5.webp",
-    },
-    title: "I will design or develop a custom webflow or figma to webflow website",
-    rating: 4.9,
-    reviews: 568,
-    price: 11239,
-    level: "Level 2 ★★",
-  },
-   {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Nishant UI",
-      avatar: "/assets/ava2.webp",
-    },
-    title: "I will build landing page using react, tailwind and framer motion",
-    rating: 4.9,
-    reviews: 132,
-    price: 6220,
-    level: "Level 1 ★",
-  },
+useEffect(() => {
+  const fetchFreelancers = async () => {
+    try {
+      const res = await getAllFreelancers({
+        page: currentPage,
+        limit
+      });
+      console.log("API DATA 👉", res.data);
 
-  {
-    images: [
-      "/assets/serviceCard3.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "PixelCraft Studio",
-      avatar: "/assets/ava3.webp",
-    },
-    title: "I will create fast SEO optimized portfolio or business website",
-    rating: 4.8,
-    reviews: 441,
-    price: 5299,
-    level: "Level 1 ★",
-  },
+      setFreelancers(res.data.profiles || []);
+      setTotalPages(res.data.pagination.totalPages || 1);
+    } catch (err) {
+      console.error("Failed to fetch freelancers", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-    ],
-    seller: {
-      name: "Atikur Rahman",
-      avatar: "/assets/ava5.webp",
-    },
-    title: "I will design or develop a custom webflow or figma to webflow website",
-    rating: 4.9,
-    reviews: 568,
-    price: 11239,
-    level: "Level 2 ★★",
-  },
+  fetchFreelancers();
+}, [currentPage]);
 
-   {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "Tohidul I.",
-      avatar: "/assets/ava4.webp",
-    },
-    title: "I will redesign a premium wordpress website with elementor pro",
-    rating: 5.0,
-    reviews: 40,
-    price: 7961,
-    level: "Level 2 ★★",
-  },
 
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Prince Mahmud",
-      avatar: "/assets/ava1.webp",
-    },
-    title: "I will build a responsive wordpress website with custom theme",
-    rating: 5.0,
-    reviews: 328,
-    price: 7493,
-    level: "Level 2 ★★",
-  },
 
-  {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Nishant UI",
-      avatar: "/assets/ava2.webp",
-    },
-    title: "I will build landing page using react, tailwind and framer motion",
-    rating: 4.9,
-    reviews: 132,
-    price: 6220,
-    level: "Level 1 ★",
-  },
-
-  {
-    images: [
-      "/assets/serviceCard3.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "PixelCraft Studio",
-      avatar: "/assets/ava3.webp",
-    },
-    title: "I will create fast SEO optimized portfolio or business website",
-    rating: 4.8,
-    reviews: 441,
-    price: 5299,
-    level: "Level 1 ★",
-  },
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Prince Mahmud",
-      avatar: "/assets/ava1.webp",
-    },
-    title: "I will build a responsive wordpress website with custom theme",
-    rating: 5.0,
-    reviews: 328,
-    price: 7493,
-    level: "Level 2 ★★",
-  },
-
-  {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "Tohidul I.",
-      avatar: "/assets/ava4.webp",
-    },
-    title: "I will redesign a premium wordpress website with elementor pro",
-    rating: 5.0,
-    reviews: 40,
-    price: 7961,
-    level: "Level 2 ★★",
-  },
-
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-    ],
-    seller: {
-      name: "Atikur Rahman",
-      avatar: "/assets/ava5.webp",
-    },
-    title: "I will design or develop a custom webflow or figma to webflow website",
-    rating: 4.9,
-    reviews: 568,
-    price: 11239,
-    level: "Level 2 ★★",
-  },
-
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-    ],
-    seller: {
-      name: "Atikur Rahman",
-      avatar: "/assets/ava5.webp",
-    },
-    title: "I will design or develop a custom webflow or figma to webflow website",
-    rating: 4.9,
-    reviews: 568,
-    price: 11239,
-    level: "Level 2 ★★",
-  },
-
-   {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "Tohidul I.",
-      avatar: "/assets/ava4.webp",
-    },
-    title: "I will redesign a premium wordpress website with elementor pro",
-    rating: 5.0,
-    reviews: 40,
-    price: 7961,
-    level: "Level 2 ★★",
-  },
-
- {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Prince Mahmud",
-      avatar: "/assets/ava1.webp",
-    },
-    title: "I will build a responsive wordpress website with custom theme",
-    rating: 5.0,
-    reviews: 328,
-    price: 7493,
-    level: "Level 2 ★★",
-  },
-
-  {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Nishant UI",
-      avatar: "/assets/ava2.webp",
-    },
-    title: "I will build landing page using react, tailwind and framer motion",
-    rating: 4.9,
-    reviews: 132,
-    price: 6220,
-    level: "Level 1 ★",
-  },
-
-   {
-    images: [
-      "/assets/serviceCard3.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "PixelCraft Studio",
-      avatar: "/assets/ava3.webp",
-    },
-    title: "I will create fast SEO optimized portfolio or business website",
-    rating: 4.8,
-    reviews: 441,
-    price: 5299,
-    level: "Level 1 ★",
-  },
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Prince Mahmud",
-      avatar: "/assets/ava1.webp",
-    },
-    title: "I will build a responsive wordpress website with custom theme",
-    rating: 5.0,
-    reviews: 328,
-    price: 7493,
-    level: "Level 2 ★★",
-  },
-
-  {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "Tohidul I.",
-      avatar: "/assets/ava4.webp",
-    },
-    title: "I will redesign a premium wordpress website with elementor pro",
-    rating: 5.0,
-    reviews: 40,
-    price: 7961,
-    level: "Level 2 ★★",
-  },
-
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-    ],
-    seller: {
-      name: "Atikur Rahman",
-      avatar: "/assets/ava5.webp",
-    },
-    title: "I will design or develop a custom webflow or figma to webflow website",
-    rating: 4.9,
-    reviews: 568,
-    price: 11239,
-    level: "Level 2 ★★",
-  },
-  
-
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-    ],
-    seller: {
-      name: "Atikur Rahman",
-      avatar: "/assets/ava5.webp",
-    },
-    title: "I will design or develop a custom webflow or figma to webflow website",
-    rating: 4.9,
-    reviews: 568,
-    price: 11239,
-    level: "Level 2 ★★",
-  },
-
-   {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "Tohidul I.",
-      avatar: "/assets/ava4.webp",
-    },
-    title: "I will redesign a premium wordpress website with elementor pro",
-    rating: 5.0,
-    reviews: 40,
-    price: 7961,
-    level: "Level 2 ★★",
-  },
-
-  {
-    images: [
-      "/assets/serviceCard1.jpg",
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Prince Mahmud",
-      avatar: "/assets/ava1.webp",
-    },
-    title: "I will build a responsive wordpress website with custom theme",
-    rating: 5.0,
-    reviews: 328,
-    price: 7493,
-    level: "Level 2 ★★",
-  },
-  
-
- {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Nishant UI",
-      avatar: "/assets/ava2.webp",
-    },
-    title: "I will build landing page using react, tailwind and framer motion",
-    rating: 4.9,
-    reviews: 132,
-    price: 6220,
-    level: "Level 1 ★",
-  },
-
-  {
-    images: [
-      "/assets/serviceCard3.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "PixelCraft Studio",
-      avatar: "/assets/ava3.webp",
-    },
-    title: "I will create fast SEO optimized portfolio or business website",
-    rating: 4.8,
-    reviews: 441,
-    price: 5299,
-    level: "Level 1 ★",
-  },
-  {
-    images: [
-      "/assets/serviceCard2.jpg",
-      "/assets/serviceCard3.jpg",
-    ],
-    seller: {
-      name: "Nishant UI",
-      avatar: "/assets/ava2.webp",
-    },
-    title: "I will build landing page using react, tailwind and framer motion",
-    rating: 4.9,
-    reviews: 132,
-    price: 6220,
-    level: "Level 1 ★",
-  },
-
-   {
-    images: [
-      "/assets/serviceCard3.jpg",
-      "/assets/serviceCard1.jpg",
-    ],
-    seller: {
-      name: "PixelCraft Studio",
-      avatar: "/assets/ava3.webp",
-    },
-    title: "I will create fast SEO optimized portfolio or business website",
-    rating: 4.8,
-    reviews: 441,
-    price: 5299,
-    level: "Level 1 ★",
-  },
- 
-];
 
 const MIN = 0;
 const MAX = 100000;
 
-const [currentPage, setCurrentPage] = useState(1);
+
 const itemsPerPage = 8; // since 4 per row, this means 1 row = 4 items
-const totalPages = Math.ceil(websiteGigsData.length / itemsPerPage);
-const currentData = websiteGigsData.slice(
-  (currentPage - 1) * itemsPerPage,
-  currentPage * itemsPerPage
-);
+// const totalPages = Math.ceil(freelancers.length / itemsPerPage);
+
+// const currentData = freelancers.slice(
+//   (currentPage - 1) * itemsPerPage,
+//   currentPage * itemsPerPage
+// );
+
 
 const sortOptions=["Best Seller", "Recommended", "New Arrivals"];
 
@@ -521,6 +70,9 @@ const sortOptions=["Best Seller", "Recommended", "New Arrivals"];
     const [selected, setSelected] = useState("Best Seller");
 const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
 const [activeSidebarSection, setActiveSidebarSection] = useState(null);
+
+
+
 
 const toggleSidebarSection = (section) => {
   setActiveSidebarSection(prev => prev === section ? null : section);
@@ -612,63 +164,66 @@ const toggleSidebarSection = (section) => {
         };
     }, []);
 
-  const GigCard = ({ gig }) => {
-    
-    const [activeImage, setActiveImage] = useState(0);
-    const { images, seller, title, rating, reviews, price, level } = gig;
+    {loading && <p>Loading freelancers...</p>}
 
+{!loading && freelancers.length === 0 && (
+  <p>No freelancers found</p>
+)}
 
-    return (
-      <div className="gig-card" >
+const GigCard = ({ profile }) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const freelancer = profile.freelancerId;
 
-        {/* Image Carousel */}
+  return (
+    <Link href={`/pages/freelancerProfile/${freelancer?._id}`}>
+      <div className="gig-card">
+
         <div className="gig-img-wrapper">
-          <Image src={images[activeImage]} alt="" className="gig-img" height={200} width={1000} />
+          <Image
+            src={
+              freelancer?.selfiePhoto
+                ? `${baseUrl}/${freelancer.selfiePhoto.replace(/\\/g, "/")}`
+                : "/assets/default-avatar.png"
+            }
+            alt="Freelancer"
+            width={1000}
+            height={200}
+            className="gig-img"
+          />
           <FiHeart className="fav-icon" />
-
-          <div className="s-dots">
-            {images.map((_, idx) => (
-              <span
-                key={idx}
-                className={`s-dot ${activeImage === idx ? "active" : ""}`}
-                onClick={() => setActiveImage(idx)}
-              />
-            ))}
-          </div>
         </div>
 
-        {/* Seller */}
-        <Link href="/pages/freelancerProfile">
         <div className="seller-row">
-          <div >
-          <Image src={seller.avatar} alt="" className="seller-img"  width={28} height={28}/>
-          <span className="seller-name hover-text">{seller.name}</span>
-          </div>
-          <div>
-          {level && <span className="badge">{level}</span>}
-          </div>
+          <span className="seller-name">
+            {freelancer?.firstName} {freelancer?.lastName}
+          </span>
+
+          {freelancer?.status === "approved" && (
+            <span className="badge">Approved</span>
+          )}
         </div>
 
-        {/* Title */}
-        <p className="gig-title">{title}</p>
+        <p className="gig-title">
+          {freelancer?.skill || "Professional Freelancer"}
+        </p>
 
-        {/* Rating */}
         <div className="rating-row">
           <AiFillStar className="star" />
-          <span>{rating}</span>
-          <span className="reviews">({reviews})</span>
+          <span>{profile.ratings?.average || 0}</span>
         </div>
 
-        {/* Price */}
         <div className="price-row">
           <span className="from">From</span>
-          <span className="service-price">₹{price}</span>
+          <span className="service-price">
+            ₹{freelancer?.hourlyRate || "—"}
+          </span>
         </div>
-        </Link>
 
       </div>
-    );
-  };
+    </Link>
+  );
+};
+
   return (
 
     
@@ -1080,51 +635,52 @@ const toggleSidebarSection = (section) => {
   
     <div className='gig-wrapper'>
     <div className="gigs-grid">
-        {currentData.map((gig, index) => (
-          <GigCard key={index} gig={gig} />
-        ))}
-      </div>
+  {loading && <p>Loading freelancers...</p>}
+
+  {!loading && freelancers.length === 0 && (
+    <p>No freelancers found</p>
+  )}
+
+  {!loading &&
+    freelancers.map(profile => (
+      <GigCard key={profile._id} profile={profile} />
+    ))
+  }
+</div>
+
       </div>
       {/* Pagination */}
 <div className="pagination">
-  
-  {/* Previous Button */}
-  <button 
-    className="page-btn"
+  <button
     disabled={currentPage === 1}
-    onClick={() => setCurrentPage(currentPage - 1)}
+    onClick={() => setCurrentPage(p => p - 1)}
   >
-    ‹
+    Prev
   </button>
 
-  {/* Page Numbers */}
-  {[...Array(totalPages)].map((_, idx) => {
-    const page = idx + 1;
-    return (
-      <button 
-        key={page}
-        className={`page-number ${currentPage === page ? "active" : ""}`}
-        onClick={() => setCurrentPage(page)}
-      >
-        {page}
-      </button>
-    );
-  })}
+  {[...Array(totalPages)].map((_, i) => (
+    <button
+      key={i}
+      className={currentPage === i + 1 ? "active" : ""}
+      onClick={() => setCurrentPage(i + 1)}
+    >
+      {i + 1}
+    </button>
+  ))}
 
-  {/* Next Button */}
-  <button 
-    className="page-btn"
+  <button
     disabled={currentPage === totalPages}
-    onClick={() => setCurrentPage(currentPage + 1)}
+    onClick={() => setCurrentPage(p => p + 1)}
   >
-    ›
+    Next
   </button>
 </div>
 
+
 <p className="pagination-info">
-  Showing {(currentPage - 1) * itemsPerPage + 1} – 
-  {Math.min(currentPage * itemsPerPage, websiteGigsData.length)} of {websiteGigsData.length}+ results
+  Page {currentPage} of {totalPages}
 </p>
+
     </div>
   )
 }

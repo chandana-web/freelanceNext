@@ -1,6 +1,6 @@
 import axiosClient from "./axiosClient";
 
-export const getFreelancerProfile = (freelancerId) => {
+export const getPublicFreelancerProfile = (freelancerId) => {
   return axiosClient.get(`/api/public/freelancer/${freelancerId}`);
 };
 
