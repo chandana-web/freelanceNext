@@ -19,7 +19,7 @@ import {
   TextField,
 } from "@mui/material";
 
-import { getFreelancerProfile } from "../../api/freelancerProfileApi";
+import { getFreelancerProfile } from "../../api/freelancerDashboardPro";
 import { postReviewReply } from "../../api/freelancerDashboardPro";
 
 export default function ReviewsPage() {
