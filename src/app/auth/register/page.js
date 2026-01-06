@@ -16,6 +16,7 @@ import { registerCustomer, registerFreelancer, getFreelancerCategories, register
 // import { registerCompany } from "@/app/api/registerCompany";
 
 import { useRouter } from "next/navigation";
+import {onAuthStateChanged} from "firebase/auth";
 
 
 import React from 'react'
@@ -99,6 +100,24 @@ const [addrProof1Progress, setAddrProof1Progress] = useState(0);
 const [addrProof2Progress, setAddrProof2Progress] = useState(0);
 
 const [verifiedEmail, setVerifiedEmail] = useState(null);
+
+  const [certificateType, setCertificateType] = useState("");
+  
+  const [frontImage, setFrontImage] = useState(null);
+  const [backImage, setBackImage] = useState(null);
+  const [frontImagePreview, setFrontImagePreview] = useState(null);
+  const [backImagePreview, setBackImagePreview] = useState(null);
+
+  const [frontImage2, setFrontImage2] = useState(null);
+  const [backImage2, setBackImage2] = useState(null);
+  const [frontImagePreview2, setFrontImagePreview2] = useState(null);
+  const [backImagePreview2, setBackImagePreview2] = useState(null);
+
+  const [fileUploadProgress, setFileUploadProgress] = useState(0);
+  const [uploadedFileName, setUploadedFileName] = useState("");
+
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [profilePreview, setProfilePreview] = useState(null);
 const isCustomer = formData.role === "I am a Customer";
 
 useEffect(() => {
@@ -433,11 +452,30 @@ const MENU_PROPS = {
 };
 
 
-
 const handleProviderAuth = async (providerData) => {
   try {
+    await new Promise((resolve, reject) => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          unsubscribe();
+          resolve(user);
+        }
+      });
+
+      setTimeout(() => {
+        unsubscribe();
+        reject(new Error("Auth timeout"));
+      }, 5000);
+    });
+
     const user = auth.currentUser;
 
+    if (!user) {
+      alert("Authentication failed. Please try again.");
+      return;
+    }
+
+    // Autofill form
     setFormData(prev => ({
       ...prev,
       firstName: providerData.name?.split(" ")[0] || "",
@@ -445,21 +483,27 @@ const handleProviderAuth = async (providerData) => {
       email: providerData.email,
     }));
 
-    if (!user.emailVerified) {
-      await sendEmailVerification(user);
-      setOtpPopup(true);
-      setOtpSent(true);
-      return alert("Verification mail sent. Please check inbox.");
-    } 
+    const isSocial = user.providerData.some(
+      p => p.providerId === "google.com" || p.providerId === "apple.com"
+    );
 
-    setOtpVerified(true);
-    alert("Email already verified ✔");
+    if (isSocial) {
+      // ✅ TRUST GOOGLE / APPLE
+      setOtpVerified(true);
+      setVerifiedEmail(user.email);
+
+      alert("Email verified via provider ✔");
+      return;
+    }
+
+    alert("Unsupported auth method");
 
   } catch (error) {
-    console.log(error);
-    alert("Something went wrong.");
+    console.error(error);
+    alert("Authentication failed. Please try again.");
   }
 };
+
 
 
 
@@ -841,23 +885,7 @@ if (!otpVerified || verifiedEmail !== formData.email) {
 
 //  const [idType1, setIdType1] = useState(""); 
 //   const [idType2, setIdType2] = useState("");
-  const [certificateType, setCertificateType] = useState("");
-  
-  const [frontImage, setFrontImage] = useState(null);
-  const [backImage, setBackImage] = useState(null);
-  const [frontImagePreview, setFrontImagePreview] = useState(null);
-  const [backImagePreview, setBackImagePreview] = useState(null);
 
-  const [frontImage2, setFrontImage2] = useState(null);
-  const [backImage2, setBackImage2] = useState(null);
-  const [frontImagePreview2, setFrontImagePreview2] = useState(null);
-  const [backImagePreview2, setBackImagePreview2] = useState(null);
-
-  const [fileUploadProgress, setFileUploadProgress] = useState(0);
-  const [uploadedFileName, setUploadedFileName] = useState("");
-
-  const [profilePhoto, setProfilePhoto] = useState(null);
-  const [profilePreview, setProfilePreview] = useState(null);
 
   // Dropdown dynamic label
 const idLabel = getIdLabel(freelancer.idType1);
@@ -867,24 +895,7 @@ const idLabel1 = getIdLabel(freelancer.idType2);
 
 
   // Category example map
-  const categoryOptions = {
-    "Software Development": {
-      sub: ["Frontend", "Backend", "Fullstack"],
-      skills: {
-        Frontend: ["React", "Angular", "Vue"],
-        Backend: ["Node.js", "Django", "Laravel"],
-        Fullstack: ["MERN", "MEAN", "Next.js + Django"]
-      }
-    },
-    "Design": {
-      sub: ["Graphic Design", "UI/UX", "3D"],
-      skills: {
-        "Graphic Design": ["Photoshop", "Illustrator", "CorelDraw"],
-        "UI/UX": ["Figma", "Adobe XD", "Sketch"],
-        "3D": ["Maya", "Blender", "Cinema 4D"]
-      }
-    }
-  };
+ 
 
   // const [category, setCategory] = useState("");
   // const [subCategory, setSubCategory] = useState("");
