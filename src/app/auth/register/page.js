@@ -762,9 +762,10 @@ const handleOtpVerify = async () => {
 const handleContinue = async () => {
   if (!validateForm()) return;
 
-  if (!auth.currentUser?.emailVerified) {
-    return alert("Please verify your email first.");
-  }
+if (!otpVerified || verifiedEmail !== formData.email) {
+  return alert("Please verify your email first.");
+}
+
 
   // const result = await submitCustomerRegistration();  // <-- THIS NOW RETURNS DATA
 
@@ -824,19 +825,19 @@ const handleContinue = async () => {
 
 
 
-  const handleResend = async () => {
-  try {
-    if (auth.currentUser) {
-      await sendEmailVerification(auth.currentUser, {
-  url: "http://localhost:3000/verify", 
-  handleCodeInApp: true
-});
-      alert("Verification link resent.");
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
+//   const handleResend = async () => {
+//   try {
+//     if (auth.currentUser) {
+//       await sendEmailVerification(auth.currentUser, {
+//   url: "http://localhost:3000/verify", 
+//   handleCodeInApp: true
+// });
+//       alert("Verification link resent.");
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 //  const [idType1, setIdType1] = useState(""); 
 //   const [idType2, setIdType2] = useState("");
